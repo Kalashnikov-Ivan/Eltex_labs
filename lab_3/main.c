@@ -1,7 +1,8 @@
 /*
 
 		Author: Kalashnikov Ivan
- */
+
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,6 +70,7 @@ int main(void)
 
 	free(teams);
 
+	printf("----Programm is finished----\n");
 	return 0;
 }
 
