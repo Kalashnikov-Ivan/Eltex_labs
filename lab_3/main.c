@@ -1,3 +1,8 @@
+/*
+
+		Author: Kalashnikov Ivan
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h> //For uint8_t and so on...
@@ -19,7 +24,6 @@ static int cmd(const void *p1, const void *p2);
 
 int main(void) 
 {
-
 	uint32_t q_teams = 0;
 	printf("Enter quantity of teams: ");
 	scanf("%d", &q_teams);
