@@ -1,6 +1,5 @@
 all : lab_2.x
 
-
 lab_2.x : main.o support_func.o tasks.o
 	gcc main.o support_func.o tasks.o -o lab_2.x
 
