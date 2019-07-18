@@ -12,6 +12,7 @@ typedef struct team
 } team;
 
 void readTeam(team *pt_team);
+static uint32_t cmd(const void *p1, const void *p2);
 
 int main(void) 
 {
@@ -22,7 +23,7 @@ int main(void)
 	team **teams = (team**)malloc(sizeof(team*) * q_teams);
 	if (teams == NULL)
 	{
-		fprintf(stderr, "\nERROR: cannot memory allocated\n");
+		fprintf(stderr, "\nERROR: cannot allocate memory\n");
 		exit(-1);
 	}
 	for (size_t i = 0; i < q_teams ; i++)
@@ -30,7 +31,7 @@ int main(void)
         teams[i] = (team*)malloc(sizeof(team));
 		if (teams[i]== NULL)
 		{
-			fprintf(stderr, "\nERROR: cannot memory allocated\n");
+			fprintf(stderr, "\nERROR: cannot allocate memory\n");
 			exit(-1);
 		}
 
@@ -41,7 +42,12 @@ int main(void)
 	for (size_t i = 0; i < q_teams; i++)
 	{
 		printf("%d team: %s\n", i, teams[i]->name);
+			printf("\t %d games\n", teams[i]->games);
+			printf("\t %d points\n", teams[i]->points);
+			printf("\t %d fund\n", teams[i]->fund);
 	}
+
+
 
 	for (size_t i = 0; i < q_teams; i++)
 		free(teams[i]);
@@ -51,9 +57,9 @@ int main(void)
 	return 0;
 }
 
-void readComands(team *pt_team)
+void readTeam(team *pt_team)
 {
-	printf("Enter name of team: ");
+	printf("\nEnter name of team: ");
 	scanf("%s", pt_team->name);
 	printf("Enter number of games %s team: ", pt_team->name);
 	scanf("%d", &pt_team->games);
@@ -61,4 +67,9 @@ void readComands(team *pt_team)
 	scanf("%d", &pt_team->points);
 	printf("Enter fund size %s team: ", pt_team->name);
 	scanf("%d", &pt_team->fund);
+}
+
+static uint32_t cmd(const void *p1, const void *p2)
+{
+	
 }
