@@ -5,14 +5,17 @@
 
 typedef struct team
 {
-	uint8_t name[50];
+	uint8_t name[50UL];
 	uint16_t games;
 	uint32_t points;
 	uint32_t fund;
 } team;
 
+
+//---------------Functions-----------------
 void readTeam(team *pt_team);
-static uint32_t cmd(const void *p1, const void *p2);
+static int cmd(const void *p1, const void *p2);
+
 
 int main(void) 
 {
@@ -41,13 +44,20 @@ int main(void)
 	printf("You input:\n");
 	for (size_t i = 0; i < q_teams; i++)
 	{
-		printf("%d team: %s\n", i, teams[i]->name);
+		printf("%d team: %s\n", i + 1, teams[i]->name);
 			printf("\t %d games\n", teams[i]->games);
 			printf("\t %d points\n", teams[i]->points);
 			printf("\t %d fund\n", teams[i]->fund);
 	}
 
+	qsort(teams, q_teams, sizeof(team*), cmd);
 
+	printf("\nSort by ascending prize pool\n");
+	for (size_t i = 0; i < q_teams; i++)
+	{
+		printf("%s team:\n", teams[i]->name);
+			printf("\t prize pool = %d\n", teams[i]->fund);
+	}
 
 	for (size_t i = 0; i < q_teams; i++)
 		free(teams[i]);
@@ -57,6 +67,7 @@ int main(void)
 	return 0;
 }
 
+//---------------Functions-----------------
 void readTeam(team *pt_team)
 {
 	printf("\nEnter name of team: ");
@@ -69,7 +80,9 @@ void readTeam(team *pt_team)
 	scanf("%d", &pt_team->fund);
 }
 
-static uint32_t cmd(const void *p1, const void *p2)
+static int cmd(const void *p1, const void *p2)
 {
-	
+	team *tm1 = *(team**)p1;
+    team *tm2 = *(team**)p2;
+    return tm1->fund - tm2->fund;
 }
