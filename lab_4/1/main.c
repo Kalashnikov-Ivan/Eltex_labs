@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 {
 	FILE *fp_in;
 
-	if (argc < 2)
+	if (argc < 3)
 	{
 		fprintf (stderr, "Too few arguments. Use <filename>\n");
 		exit(1);
@@ -33,19 +33,8 @@ int main(int argc, char *argv[])
 	int q_str = atoi(argv[2]);
 
 	char new_filename[FILENAME_SIZE];
-
-	{
-		size_t i = 0;
-		for (; argv[1][i] != '\0'; i++)
-			new_filename[i] = argv[1][i];
-
-		new_filename[i++] = '.';
-		new_filename[i++] = 'f';
-		new_filename[i++] = 'r';
-		new_filename[i++] = 'o';
-		new_filename[i++] = 'm';
-		new_filename[i] = '\0';
-	}
+	strcpy(new_filename, argv[1]);
+	strcat(new_filename, ".from");
 
 	FILE *fp_out = fopen(new_filename, "w");
 
