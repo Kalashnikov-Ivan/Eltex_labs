@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	size_t i = 0;
 	for (; argv[1][i] != '\0'; i++)
 		new_filename[i] = argv[1][i];
-	
+
 	new_filename[i++] = '.';
 	new_filename[i++] = 'f';
 	new_filename[i++] = 'r';
@@ -43,37 +43,42 @@ int main(int argc, char *argv[])
 	new_filename[i++] = 'm';
 	new_filename[i] = '\0';
 
-	/*printf("%s\n", new_filename);
-
-	int out;
-	while ((out = fgetc(fp_in)) != EOF)
-	{
-		printf("%c\n", out);
-		printf("%ld\n", fp_in->_IO_read_ptr);
-		fp_in->_IO_read_ptr--;
-		out = fgetc(fp_in);
-		printf("%c\n", out);
-		printf("%ld\n", fp_in->_IO_read_ptr);
-	}
-	*/
-
 	FILE *fp_out = fopen(new_filename, "w");
 
-	int out, bool_with_num = 0;
+	int out, bool_with_num, q = 0;
 
-	for (size_t i = 0, j = 0; out != EOF;)
+	for (int symbol_count; q != q_str; q++)
 	{
-		while (out = getc(fp_in))
+		bool_with_num = 0, symbol_count = 1;
+		while (((out = fgetc(fp_in)) != '\n') && out != EOF)
 		{
 			if (isdigit(out))
 				bool_with_num = 1;
-
+			symbol_count++;
 		}
+
+		if (!bool_with_num)
+		{
+			fp_in->_IO_read_ptr -= symbol_count;
+			while ((out = fgetc(fp_in)) != '\n' && out != EOF)
+				fputc(out, fp_out);
+			if (out != EOF)
+				fputc(out, fp_out);
+		}
+
+		if (out == EOF)
+			break;
 	}
 
 	if(fclose(fp_in))
 	{ 
-		printf("Error of close file.\n");
+		printf("Error close of file.\n");
+		exit(1);
+	}
+
+	if(fclose(fp_out))
+	{ 
+		printf("Error close of file.\n");
 		exit(1);
 	}
 	
