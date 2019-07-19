@@ -63,15 +63,7 @@ int main(int argc, char *argv[])
 		}
 
 		if (!bool_with_num)
-		{
-			fp_in->_IO_read_ptr -= symbol_count;
-			while ((out = fgetc(fp_in)) != '\n' && out != EOF)
-				fputc(out, fp_out);
-			fputc(out, fp_out);
-		}
-
-		if (out == EOF)
-			break;
+			fputs(buff, fp_out);
 	}
 
 	if(fclose(fp_in))
