@@ -32,22 +32,24 @@ int main(int argc, char *argv[])
 
 	char new_filename[SIZE_FILENAME];
 
-	size_t i = 0;
-	for (; argv[1][i] != '\0'; i++)
-		new_filename[i] = argv[1][i];
+	{
+		size_t i = 0;
+		for (; argv[1][i] != '\0'; i++)
+			new_filename[i] = argv[1][i];
 
-	new_filename[i++] = '.';
-	new_filename[i++] = 'f';
-	new_filename[i++] = 'r';
-	new_filename[i++] = 'o';
-	new_filename[i++] = 'm';
-	new_filename[i] = '\0';
+		new_filename[i++] = '.';
+		new_filename[i++] = 'f';
+		new_filename[i++] = 'r';
+		new_filename[i++] = 'o';
+		new_filename[i++] = 'm';
+		new_filename[i] = '\0';
+	}
 
 	FILE *fp_out = fopen(new_filename, "w");
 
-	int out, bool_with_num, q = 0;
+	int out, bool_with_num, q_current = 0;
 
-	for (int symbol_count; q != q_str; q++)
+	for (int symbol_count; q_current != q_str; q_current++)
 	{
 		bool_with_num = 0, symbol_count = 1;
 		while (((out = fgetc(fp_in)) != '\n') && out != EOF)
@@ -62,8 +64,7 @@ int main(int argc, char *argv[])
 			fp_in->_IO_read_ptr -= symbol_count;
 			while ((out = fgetc(fp_in)) != '\n' && out != EOF)
 				fputc(out, fp_out);
-			if (out != EOF)
-				fputc(out, fp_out);
+			fputc(out, fp_out);
 		}
 
 		if (out == EOF)
