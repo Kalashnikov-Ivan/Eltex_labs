@@ -9,7 +9,8 @@
 #include <ctype.h>
 #include <stddef.h> //For size_t, ptrdiff_t and so on...
 
-#define SIZE_FILENAME 128UL
+#define FILENAME_SIZE 128UL
+#define BUFF_SIZE 2056UL
 
 int main(int argc, char *argv[]) 
 {
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
 	//For second argument
 	int q_str = atoi(argv[2]);
 
-	char new_filename[SIZE_FILENAME];
+	char new_filename[FILENAME_SIZE];
 
 	{
 		size_t i = 0;
@@ -48,15 +49,17 @@ int main(int argc, char *argv[])
 	FILE *fp_out = fopen(new_filename, "w");
 
 	int out, bool_with_num, q_current = 0;
+	char buff[BUFF_SIZE];
 
 	for (int symbol_count; q_current != q_str; q_current++)
 	{
-		bool_with_num = 0, symbol_count = 1;
-		while (((out = fgetc(fp_in)) != '\n') && out != EOF)
+		bool_with_num = 0;
+		fgets(buff, BUFF_SIZE, fp_in);
+
+		for (size_t i = 0; buff[i] != '\n'; i++)
 		{
-			if (isdigit(out))
+			if (isdigit(buff[i]))
 				bool_with_num = 1;
-			symbol_count++;
 		}
 
 		if (!bool_with_num)
