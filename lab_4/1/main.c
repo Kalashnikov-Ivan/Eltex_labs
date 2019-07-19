@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	if (argc < 2)
 	{
 		fprintf (stderr, "Too few arguments. Use <filename>\n");
-		exit (1);
+		exit(1);
     }
 
 	if((fp_in = fopen(argv[1], "r")) == NULL)
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
 	FILE *fp_out = fopen(new_filename, "w");
 
-	int out, bool_with_num, q_current = 0;
+	int bool_with_num, q_current = 0;
 	char buff[BUFF_SIZE];
 
 	for (int symbol_count; q_current != q_str; q_current++)
