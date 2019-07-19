@@ -1,6 +1,7 @@
 /*
 
 		Author: Kalashnikov Ivan
+		Task: Lab_4, Var 6.2
 
 */
 
@@ -48,10 +49,10 @@ int main(int argc, char *argv[])
 
 	FILE *fp_out = fopen(new_filename, "w");
 
-	int bool_with_num, q_current = 0;
+	int bool_with_num;
 	char buff[BUFF_SIZE];
 
-	for (int symbol_count; q_current != q_str; q_current++)
+	for (int q_current = 0; q_current != q_str; q_current++)
 	{
 		bool_with_num = 0;
 		fgets(buff, BUFF_SIZE, fp_in);
