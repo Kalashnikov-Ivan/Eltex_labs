@@ -1,7 +1,7 @@
 /*
 
 		Author: Kalashnikov Ivan
-		Task: Lab_4, Var 6.2
+		Task: Lab_4, Var 6.1
 
 */
 
