@@ -40,10 +40,10 @@ int main(int argc, char *argv[])
 
 	int out, q_current = 0;	
 
-	while (((out = fgetc(fp_in)) != EOF) && q_current != q_insertion)
+	while (((out = fgetc(fp_in)) != EOF))
 	{
 		fputc(out, fp_out);
-		if (out == '.')
+		if (out == '.' && q_current != q_insertion)
 		{
 			fputc('\n', fp_out);
 			q_current++;
