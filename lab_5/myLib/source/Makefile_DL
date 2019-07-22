@@ -1,3 +1,6 @@
+libDL_str_op.so : str_op.o
+	gcc -shared str_op.o -o libDL_str_op.so
+
 str_op.o : str_op.c
 	gcc -c -Wall -std=c99 -fPIC str_op.c
 
