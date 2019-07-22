@@ -7,4 +7,5 @@ Theory/
 **/*.o
 # Ignoring all executable files in all catalogs
 **/*.x
+**/*.elf
 **/*.code-workspace
