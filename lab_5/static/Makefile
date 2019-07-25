@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-c -Wall -std=c99
-LIBS=-L/home/st/Work/Eltex/C/lab_5/myLib/ -lStr_op
+LIBS=-L../myLib/ -lStr_op
 
 all : static.elf
 

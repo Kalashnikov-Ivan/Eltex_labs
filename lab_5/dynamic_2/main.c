@@ -14,7 +14,7 @@
 int main(void) 
 {
 
-	void *str_op_HAND = dlopen("/home/st/Work/Eltex/C/lab_5/myLib/libDL_str_op.so", RTLD_LAZY);
+	void *str_op_HAND = dlopen("../myLib/libDL_str_op.so", RTLD_LAZY);
 	if (str_op_HAND == NULL)
 	{
 		fprintf(stderr,"dlopen() error: %s\n", dlerror());

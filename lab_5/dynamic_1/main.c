@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 
-#include "/home/st/Work/Eltex/C/lab_5/myLib/source/str_op.h"
+#include "../myLib/source/str_op.h"
 
 #define STR_SIZE 128UL
 

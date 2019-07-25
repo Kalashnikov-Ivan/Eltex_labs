@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-c -Wall -std=c99
-#LIBS=-L/home/st/Work/Eltex/C/lab_5/myLib/ -lDL_str_op
+#LIBS=-L../myLib/ -lDL_str_op
 
 all : dynaminc_2.elf
 
