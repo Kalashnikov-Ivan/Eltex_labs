@@ -21,13 +21,15 @@ int main(void)
 		exit(1);
 	}
 
-	void (*conc)(char * restrict dest, const size_t capacity_dest, 
+	void (*conc)(char * restrict dest, 
+				 const size_t capacity_dest, 
  				 const char * restrict source) = dlsym(str_op_HAND, "str_conc");
 	
 
 
-	void (*gap)(char * restrict dest, const size_t capacity_dest, 
- 				char * restrict source, int gap_from)= dlsym(str_op_HAND, "str_gap");
+	void (*gap)(char * restrict dest, 
+				const size_t capacity_dest, 
+ 				char * restrict source, int gap_from) = dlsym(str_op_HAND, "str_gap");
 
 
 	char str[STR_SIZE] = "hello again, ";

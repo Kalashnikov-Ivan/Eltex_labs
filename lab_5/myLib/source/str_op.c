@@ -7,7 +7,8 @@
 //---------------Functions-----------------
 
 void str_conc
-(char * restrict dest, const size_t capacity_dest, 
+(char * restrict dest, 
+ const size_t capacity_dest, 
  const char * restrict source)
 {
     size_t size_dest = strlen(dest);
@@ -27,7 +28,8 @@ void str_conc
 }
 
 void str_gap
-(char * restrict dest, const size_t capacity_dest,
+(char * restrict dest, 
+ const size_t capacity_dest,
  char * restrict source, int gap_from)
 {
     if (gap_from <= 0)
