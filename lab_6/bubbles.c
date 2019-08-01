@@ -30,6 +30,23 @@ field* init_field
             return NULL;
     }
 
+    //----------INIT OF BUBBLES------------
+    result_field->quant_bubbles = quant_bubbles;
+    result_field->bubbles = (bubble*)malloc(sizeof(bubble) * quant_bubbles);
+
+    srand(time(NULL));
+     
+    for (size_t i = 0; i < quant_bubbles; i++)
+    {
+       result_field->bubbles[i].cord_x = (1 + rand() % (1 - result_field->size_x));
+       result_field->bubbles[i].cord_x = (1 + rand() % (1 - result_field->size_x));
+
+       while (check_overlay(result_field))
+       {
+           
+       }
+    }
+
     //--------INIT VALUES OF FIELD---------
     for (size_t row = 0; row < size_y; row++)
     {
@@ -57,6 +74,18 @@ void free_field
     free(field);
 }
 
+uint8_t check_overlay
+    (const field * restrict field,
+     const inpt_x,
+     const inpt_y)
+{
+    for (size_t i = 0; i < field->quant_bubbles; i++)
+        if ((field->bubbles[i].cord_x == inpt_x) && (field->bubbles[i].cord_y == inpt_y))
+            return 1;
+
+    return 0;
+}
+
 void print_field
     (const field * restrict field)
 {
@@ -67,6 +96,7 @@ void print_field
         printf("\n");
     }
 }
+
 
 void update_field
     (field * restrict field, 
