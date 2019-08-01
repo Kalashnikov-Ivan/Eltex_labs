@@ -6,9 +6,9 @@
 #include "bubbles.h"
 
 field* init_field
-	(const size_t size_x, 
+	(const size_t size_x,
 	 const size_t size_y,
-	 const size_t quant_bubbles)
+	 const uint32_t quant_bubbles)
 {
     //-----------ALOC MEMORY-------------
     field *result_field = (field*)malloc(sizeof(field));
@@ -36,25 +36,32 @@ field* init_field
 
     srand(time(NULL));
      
-    int32_t curr_x, curr_y;
 
-    for (size_t i = 0; i < quant_bubbles; i++)
+    const int32_t min_cord = 1, 
+                 max_cord_X = result_field->size_x - 1,
+                 max_cord_Y = result_field->size_y - 1;
+
+    int32_t curr_x = min_cord + rand() % (min_cord - max_cord_X),
+            curr_y = min_cord + rand() % (min_cord - max_cord_Y);
+
+    for (size_t i = 0UL; i < quant_bubbles; i++)
     {
-       curr_x = result_field->bubbles[i].cord_x = (1 + rand() % (1 - (result_field->size_x - 1)));
-       curr_y = result_field->bubbles[i].cord_y = (1 + rand() % (1 - (result_field->size_y - 1)));
-
        while (check_overlay(result_field, curr_x, curr_y))
        {
-            result_field->bubbles[i].cord_x = (1 + rand() % (1 - (result_field->size_x - 1)));
-            result_field->bubbles[i].cord_y = (1 + rand() % (1 - (result_field->size_y - 1)));
+            curr_x = min_cord + rand() % (min_cord - max_cord_X);
+            curr_y = min_cord + rand() % (min_cord - max_cord_Y);
        }
+
+       result_field->bubbles[i].cord_x = curr_x;
+       result_field->bubbles[i].cord_y = curr_y;
+
        result_field->bubbles[i].ch = 'o';
     }
 
     //--------INIT VALUES OF FIELD---------
-    for (size_t row = 0; row < size_y; row++)
+    for (size_t row = 0UL; row < size_y; row++)
     {
-        for (size_t col = 0; col < size_x; col++)
+        for (size_t col = 0UL; col < size_x; col++)
         {
             if (row == 0 || row == size_y - 1)
                 result_field->area[row][col] = '-';
@@ -69,7 +76,7 @@ field* init_field
             curr_x = result_field->bubbles[i].cord_x;
             curr_y = result_field->bubbles[i].cord_y;
 
-            result_field->area[curr_x][curr_y] = result_field->bubbles[i].ch;
+            result_field->area[curr_y][curr_x] = result_field->bubbles[i].ch;
         }
     }
 
@@ -83,6 +90,7 @@ void free_field
         free(field->area[row]);
     
     free(field->area);
+    free(field->bubbles);
     free(field);
 }
 
@@ -92,6 +100,7 @@ uint8_t check_overlay
      const int32_t inpt_y)
 {
     for (size_t i = 0; i < field->quant_bubbles; i++)
+        //what if trash from memory will be eq inpt_* ? 
         if ((field->bubbles[i].cord_x == inpt_x) && (field->bubbles[i].cord_y == inpt_y))
             return 1;
 
@@ -101,20 +110,19 @@ uint8_t check_overlay
 void print_field
     (const field * restrict field)
 {
-    for (size_t row = 0; row < field->size_y; row++)
+    for (size_t row = 0UL; row < field->size_y; row++)
     {
-        for (size_t col = 0; col < field->size_x; col++)
+        for (size_t col = 0UL; col < field->size_x; col++)
             printf("%c", field->area[row][col]);
         printf("\n");
     }
 }
 
-
 void update_field
-    (field * restrict field, 
-     const uint8_t ch, 
-     const size_t cord_x,
-     const size_t cord_y)
+	(field * restrict field, 
+	 const uint8_t ch, 
+	 const int32_t cord_x,
+	 const int32_t cord_y)
 {
     field->area[cord_y][cord_x] = ch;
 }

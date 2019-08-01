@@ -14,14 +14,14 @@ typedef struct {
 	size_t size_y;
 
 	bubble * restrict bubbles;
-	size_t quant_bubbles;
+	uint32_t quant_bubbles;
 } __attribute__((packed)) field;
 
 //---------------Functions-----------------
 field* init_field
 	(const size_t size_x,
 	 const size_t size_y,
-	 const size_t quant_bubbles);
+	 const uint32_t quant_bubbles);
 
 void free_field
 	(field * restrict field);
@@ -37,5 +37,5 @@ void print_field
 void update_field
 	(field * restrict field, 
 	 const uint8_t ch, 
-	 const size_t cord_x,
-	 const size_t cord_y);
+	 const int32_t cord_x,
+	 const int32_t cord_y);

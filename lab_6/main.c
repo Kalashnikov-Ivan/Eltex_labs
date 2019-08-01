@@ -13,7 +13,12 @@
 
 int main(void) 
 {
-	field *field = init_field(20, 10, 3);
+	size_t size_x = 20UL;
+	size_t size_y = 10UL;
+
+
+
+	field *field = init_field(20, 10, 201);
 
 	print_field(field);
 
