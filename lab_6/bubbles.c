@@ -128,9 +128,11 @@ void update_field
 }
 
 void move_bubble
-	(field * restrict field, 
-	 const int32_t dx, 
+	(field * restrict field,
+     bubble * bubble, 
+	 const int32_t dx,
 	 const int32_t dy)
 {
-    
+    bubble->cord_x += dx;
+    bubble->cord_y += dy;
 }
