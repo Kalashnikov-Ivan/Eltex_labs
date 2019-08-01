@@ -1,4 +1,6 @@
 
+#include <stdint.h> //For uint8_t and so on...
+
 //-----------------Types-------------------
 typedef struct {
 	uint8_t ch;
@@ -26,8 +28,8 @@ void free_field
 
 uint8_t check_overlay
     (const field * restrict field,
-     const inpt_x,
-     const inpt_y);
+     const int32_t inpt_x,
+     const int32_t inpt_y);
 
 void print_field
 	(const field * restrict field);

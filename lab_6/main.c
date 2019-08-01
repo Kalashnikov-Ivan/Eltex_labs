@@ -13,7 +13,7 @@
 
 int main(void) 
 {
-	field *field = init_field(20, 10);
+	field *field = init_field(20, 10, 3);
 
 	print_field(field);
 

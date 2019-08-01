@@ -36,15 +36,19 @@ field* init_field
 
     srand(time(NULL));
      
+    int32_t curr_x, curr_y;
+
     for (size_t i = 0; i < quant_bubbles; i++)
     {
-       result_field->bubbles[i].cord_x = (1 + rand() % (1 - result_field->size_x));
-       result_field->bubbles[i].cord_x = (1 + rand() % (1 - result_field->size_x));
+       curr_x = result_field->bubbles[i].cord_x = (1 + rand() % (1 - (result_field->size_x - 1)));
+       curr_y = result_field->bubbles[i].cord_y = (1 + rand() % (1 - (result_field->size_y - 1)));
 
-       while (check_overlay(result_field))
+       while (check_overlay(result_field, curr_x, curr_y))
        {
-           
+            result_field->bubbles[i].cord_x = (1 + rand() % (1 - (result_field->size_x - 1)));
+            result_field->bubbles[i].cord_y = (1 + rand() % (1 - (result_field->size_y - 1)));
        }
+       result_field->bubbles[i].ch = 'o';
     }
 
     //--------INIT VALUES OF FIELD---------
@@ -58,6 +62,14 @@ field* init_field
                 result_field->area[row][col] = '|';
             else
                 result_field->area[row][col] = ' ';
+        }
+
+        for (size_t i = 0; i < quant_bubbles; i++)
+        {
+            curr_x = result_field->bubbles[i].cord_x;
+            curr_y = result_field->bubbles[i].cord_y;
+
+            result_field->area[curr_x][curr_y] = result_field->bubbles[i].ch;
         }
     }
 
@@ -76,8 +88,8 @@ void free_field
 
 uint8_t check_overlay
     (const field * restrict field,
-     const inpt_x,
-     const inpt_y)
+     const int32_t inpt_x,
+     const int32_t inpt_y)
 {
     for (size_t i = 0; i < field->quant_bubbles; i++)
         if ((field->bubbles[i].cord_x == inpt_x) && (field->bubbles[i].cord_y == inpt_y))
