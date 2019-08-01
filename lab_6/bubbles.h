@@ -18,6 +18,8 @@ typedef struct {
 } __attribute__((packed)) field;
 
 //---------------Functions-----------------
+
+//----------Field------------
 field* init_field
 	(const size_t size_x,
 	 const size_t size_y,
@@ -39,3 +41,9 @@ void update_field
 	 const uint8_t ch, 
 	 const int32_t cord_x,
 	 const int32_t cord_y);
+
+//----------Bubble------------
+void move_bubble
+	(field * restrict field, 
+	 const int32_t dx, 
+	 const int32_t dy);

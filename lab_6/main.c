@@ -16,9 +16,11 @@ int main(void)
 	size_t size_x = 20UL;
 	size_t size_y = 10UL;
 
+	uint32_t quantity_bubbles = 5;
+	if (quantity_bubbles > ((size_x - 2) * (size_y - 2)))
+		return 1;
 
-
-	field *field = init_field(20, 10, 201);
+	field *field = init_field(size_x, size_y, quantity_bubbles);
 
 	print_field(field);
 

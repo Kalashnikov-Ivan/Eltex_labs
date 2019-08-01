@@ -38,8 +38,8 @@ field* init_field
      
 
     const int32_t min_cord = 1, 
-                 max_cord_X = result_field->size_x - 1,
-                 max_cord_Y = result_field->size_y - 1;
+                  max_cord_X = result_field->size_x - 1,
+                  max_cord_Y = result_field->size_y - 1;
 
     int32_t curr_x = min_cord + rand() % (min_cord - max_cord_X),
             curr_y = min_cord + rand() % (min_cord - max_cord_Y);
@@ -125,4 +125,12 @@ void update_field
 	 const int32_t cord_y)
 {
     field->area[cord_y][cord_x] = ch;
+}
+
+void move_bubble
+	(field * restrict field, 
+	 const int32_t dx, 
+	 const int32_t dy)
+{
+    
 }
