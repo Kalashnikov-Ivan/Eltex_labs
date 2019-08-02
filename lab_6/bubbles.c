@@ -141,14 +141,15 @@ m_bool move_bubble
     m_bool is_board = false;
     if (bubble->alive && !check_overlay(field,  bubble->cord_x + dx, bubble->cord_y + dy))
     {
-        if (field->area[bubble->cord_y][bubble->cord_x] != '-' || 
-            field->area[bubble->cord_y][bubble->cord_x] != '|')
-                is_board = true;
-
+        is_board = false;
         field->area[bubble->cord_y][bubble->cord_x] = ' ';
 
         bubble->cord_x += dx;
         bubble->cord_y += dy;
+
+        if (field->area[bubble->cord_y][bubble->cord_x] != '-' || 
+            field->area[bubble->cord_y][bubble->cord_x] != '|')
+                is_board = true;
 
         if ((bubble->cord_x > field->size_x - 2) || (bubble->cord_y > field->size_y - 2))
         {
