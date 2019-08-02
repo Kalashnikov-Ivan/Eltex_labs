@@ -43,7 +43,7 @@ void update_field
 	 const int32_t cord_y);
 
 //----------Bubble------------
-void move_bubble
+uint8_t move_bubble
 	(field * restrict field,
      bubble * bubble, 
 	 const int32_t dx,

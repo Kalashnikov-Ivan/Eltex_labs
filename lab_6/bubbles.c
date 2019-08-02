@@ -127,12 +127,21 @@ void update_field
     field->area[cord_y][cord_x] = ch;
 }
 
-void move_bubble
+uint8_t move_bubble
 	(field * restrict field,
      bubble * bubble, 
 	 const int32_t dx,
 	 const int32_t dy)
 {
+    field->area[bubble->cord_y][bubble->cord_x] = ' ';
+
     bubble->cord_x += dx;
     bubble->cord_y += dy;
+
+    if ((bubble->cord_x > field->size_x - 2) || (bubble->cord_y > field->size_y - 2))
+        return 1;
+
+    field->area[bubble->cord_y][bubble->cord_x] = bubble->ch;
+
+    return 0;
 }
