@@ -26,17 +26,17 @@ int main(void)
 	system("clear");
 	print_field(field);
 
-	uint8_t from_board = 0;
+	uint8_t not_from_board = 1;
 	while (field->quant_bubbles)
 	{
-		from_board = 0;
-		for (size_t j = 0; !from_board && j < field->quant_bubbles; j++)
-			from_board = move_bubble(field, &field->bubbles[j], 1, 0);
+		not_from_board = 1;
+		for (size_t j = 0; j < field->quant_bubbles; j++)
+			not_from_board = move_bubble(field, &field->bubbles[j], 1, 0);
 
 		/*if (!not_from_board)
 			field->quant_bubbles--;*/
 
-		//usleep(300000);
+		usleep(300000);
 		system("clear");
 		print_field(field);
 	}
