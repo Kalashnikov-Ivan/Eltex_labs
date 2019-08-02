@@ -1,11 +1,16 @@
 
 #include <stdint.h> //For uint8_t and so on...
 
+#define true 1
+#define false 0
+
 //-----------------Types-------------------
 typedef struct {
 	uint8_t ch;
 	int32_t cord_x;
 	int32_t cord_y;
+
+	uint8_t alive;
 } __attribute__((packed)) bubble;
 
 typedef struct {

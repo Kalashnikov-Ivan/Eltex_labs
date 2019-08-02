@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h> //For size_t, ptrdiff_t and so on...
-#include <stdint.h> //For uint8_t and so on...
+//#include <stdint.h> //For uint8_t and so on...
+#include <stdbool.h>
 
 #include "bubbles.h"
 
@@ -56,6 +57,7 @@ field* init_field
        result_field->bubbles[i].cord_y = curr_y;
 
        result_field->bubbles[i].ch = 'o';
+       result_field->bubbles[i].alive = true;
     }
 
     //--------INIT VALUES OF FIELD---------
@@ -102,9 +104,9 @@ uint8_t check_overlay
     for (size_t i = 0; i < field->quant_bubbles; i++)
         //what if trash from memory will be eq inpt_* ? 
         if ((field->bubbles[i].cord_x == inpt_x) && (field->bubbles[i].cord_y == inpt_y))
-            return 1;
+            return true;
 
-    return 0;
+    return false;
 }
 
 void print_field
@@ -133,15 +135,23 @@ uint8_t move_bubble
 	 const int32_t dx,
 	 const int32_t dy)
 {
-    field->area[bubble->cord_y][bubble->cord_x] = ' ';
+    if (bubble->alive && !check_overlay(field,  bubble->cord_x + dx, bubble->cord_y + dy))
+    {
+        field->area[bubble->cord_y][bubble->cord_x] = ' ';
 
-    bubble->cord_x += dx;
-    bubble->cord_y += dy;
+        bubble->cord_x += dx;
+        bubble->cord_y += dy;
 
-    if ((bubble->cord_x > field->size_x - 2) || (bubble->cord_y > field->size_y - 2))
-        return 1;
+        if ((bubble->cord_x > field->size_x - 2) || (bubble->cord_y > field->size_y - 2))
+        {
+            field->quant_bubbles--;
+            return bubble->alive = false;
+        }
 
-    field->area[bubble->cord_y][bubble->cord_x] = bubble->ch;
+        field->area[bubble->cord_y][bubble->cord_x] = bubble->ch;
 
-    return 0;
+        return true;
+    }
+    
+    return false;
 }

@@ -26,15 +26,17 @@ int main(void)
 	system("clear");
 	print_field(field);
 
-	uint8_t is_end = 0;
-	while (!is_end)
+	uint8_t from_board = 0;
+	while (field->quant_bubbles)
 	{
-		for (size_t j = 0; !is_end && j < field->quant_bubbles; j++)
-			is_end = move_bubble(field, &field->bubbles[j], 1, 0);
+		from_board = 0;
+		for (size_t j = 0; !from_board && j < field->quant_bubbles; j++)
+			from_board = move_bubble(field, &field->bubbles[j], 1, 0);
 
+		/*if (!not_from_board)
+			field->quant_bubbles--;*/
 
-		//if (is_end)
-		sleep(1);
+		//usleep(300000);
 		system("clear");
 		print_field(field);
 	}
