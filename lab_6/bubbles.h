@@ -4,6 +4,8 @@
 #define true 1
 #define false 0
 
+typedef uint8_t m_bool;
+
 //-----------------Types-------------------
 typedef struct {
 	uint8_t ch;
@@ -48,8 +50,11 @@ void update_field
 	 const int32_t cord_y);
 
 //----------Bubble------------
-uint8_t move_bubble
+m_bool move_bubble
 	(field * restrict field,
      bubble * bubble, 
 	 const int32_t dx,
 	 const int32_t dy);
+
+
+uint8_t get_rand_num();

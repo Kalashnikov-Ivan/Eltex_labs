@@ -36,7 +36,7 @@ field* init_field
     result_field->bubbles = (bubble*)malloc(sizeof(bubble) * quant_bubbles);
 
     srand(time(NULL));
-     
+    
 
     const int32_t min_cord = 1, 
                   max_cord_X = result_field->size_x - 1,
@@ -57,6 +57,7 @@ field* init_field
        result_field->bubbles[i].cord_y = curr_y;
 
        result_field->bubbles[i].ch = 'o';
+       //result_field->bubbles[i].ch = get_rand_num();
        result_field->bubbles[i].alive = true;
     }
 
@@ -102,10 +103,12 @@ uint8_t check_overlay
      const int32_t inpt_y)
 {
     for (size_t i = 0; i < field->quant_bubbles; i++)
-        //what if trash from memory will be eq inpt_* ? 
-        if ((field->bubbles[i].cord_x == inpt_x) && (field->bubbles[i].cord_y == inpt_y))
-            return true;
-
+    {
+        if (field->bubbles[i].alive)
+            //what if trash from memory will be eq inpt_* ? 
+            if ((field->bubbles[i].cord_x == inpt_x) && (field->bubbles[i].cord_y == inpt_y))
+                return true;
+    }
     return false;
 }
 
@@ -129,14 +132,19 @@ void update_field
     field->area[cord_y][cord_x] = ch;
 }
 
-uint8_t move_bubble
+m_bool move_bubble
 	(field * restrict field,
      bubble * bubble, 
 	 const int32_t dx,
 	 const int32_t dy)
 {
+    m_bool is_board = false;
     if (bubble->alive && !check_overlay(field,  bubble->cord_x + dx, bubble->cord_y + dy))
     {
+        if (field->area[bubble->cord_y][bubble->cord_x] != '-' || 
+            field->area[bubble->cord_y][bubble->cord_x] != '|')
+                is_board = true;
+
         field->area[bubble->cord_y][bubble->cord_x] = ' ';
 
         bubble->cord_x += dx;
@@ -155,3 +163,8 @@ uint8_t move_bubble
     
     return false;
 }
+
+/*uint8_t get_rand_num()
+{
+   return 48 + rand() % (48 - 50);
+}*/

@@ -14,10 +14,10 @@
 
 int main(void) 
 {
-	size_t size_x = 20UL;
+	size_t size_x = 40UL;
 	size_t size_y = 10UL;
 
-	uint32_t quantity_bubbles = 5;
+	uint32_t quantity_bubbles = 55;
 	if (quantity_bubbles > ((size_x - 2) * (size_y - 2)))
 		return 1;
 
@@ -26,15 +26,14 @@ int main(void)
 	system("clear");
 	print_field(field);
 
-	uint8_t not_from_board = 1;
+	uint32_t global_q_bubbles = field->quant_bubbles;
 	while (field->quant_bubbles)
 	{
-		not_from_board = 1;
-		for (size_t j = 0; j < field->quant_bubbles; j++)
-			not_from_board = move_bubble(field, &field->bubbles[j], 1, 0);
-
-		/*if (!not_from_board)
-			field->quant_bubbles--;*/
+		for (size_t j = 0; j < global_q_bubbles; j++)
+		{
+			uint32_t rand_dx = -1 + rand() % (-1 - 2), rand_dy = -1 + rand() % (-1 - 2);
+			move_bubble(field, &field->bubbles[j], rand_dx, rand_dy);
+		}
 
 		usleep(300000);
 		system("clear");
