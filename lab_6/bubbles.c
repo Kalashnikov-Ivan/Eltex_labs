@@ -36,21 +36,20 @@ field* init_field
     result_field->bubbles = (bubble*)malloc(sizeof(bubble) * quant_bubbles);
 
     srand(time(NULL));
-    
 
     const int32_t min_cord = 1, 
                   max_cord_X = result_field->size_x - 1,
                   max_cord_Y = result_field->size_y - 1;
 
-    int32_t curr_x = min_cord + rand() % (min_cord - max_cord_X),
-            curr_y = min_cord + rand() % (min_cord - max_cord_Y);
+    int32_t curr_x = get_rand_in_range(min_cord, max_cord_X),
+            curr_y = get_rand_in_range(min_cord, max_cord_Y);
 
     for (size_t i = 0UL; i < quant_bubbles; i++)
     {
        while (check_overlay(result_field, curr_x, curr_y))
        {
-            curr_x = min_cord + rand() % (min_cord - max_cord_X);
-            curr_y = min_cord + rand() % (min_cord - max_cord_Y);
+            curr_x = get_rand_in_range(min_cord, max_cord_X);
+            curr_y = get_rand_in_range(min_cord, max_cord_Y);       
        }
 
        result_field->bubbles[i].cord_x = curr_x;
@@ -164,7 +163,11 @@ m_bool move_bubble
     return false;
 }
 
-/*uint8_t get_rand_num()
+//----------Support------------
+
+int32_t get_rand_in_range
+    (const int32_t min, 
+     const int32_t max)
 {
-   return 48 + rand() % (48 - 50);
-}*/
+   return min + rand() % (min - max);
+}

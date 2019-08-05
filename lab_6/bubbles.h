@@ -56,5 +56,8 @@ m_bool move_bubble
 	 const int32_t dx,
 	 const int32_t dy);
 
+//----------Support------------
 
-uint8_t get_rand_num();
+int32_t get_rand_in_range
+    (const int32_t min, 
+     const int32_t max);
