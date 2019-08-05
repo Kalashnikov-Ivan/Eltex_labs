@@ -56,6 +56,11 @@ m_bool move_bubble
 	 const int32_t dx,
 	 const int32_t dy);
 
+m_bool is_board
+	(const field * restrict field,
+	 const int32_t cord_x,
+	 const int32_t cord_y);
+
 //----------Support------------
 
 int32_t get_rand_in_range

@@ -33,7 +33,7 @@ int main(void)
 	print_field(field);
 	
 
-	const int32_t min_dx = -1, min_dy = -1,
+	const int32_t min_dx = -2, min_dy = -2,
 				  max_dx =  2, max_dy =  2;
 
 	
@@ -43,8 +43,10 @@ int main(void)
 		exit(1);
   	}
 	
-	uint8_t buff[128];
-	uint8_t buff_support[128];
+	uint8_t buff[128UL];
+	uint8_t buff_support[128UL];
+
+	int16_t pid[100UL];
 
 	uint32_t global_q_bubbles = field->quant_bubbles;
 
@@ -52,18 +54,28 @@ int main(void)
 	{
 		for (size_t j = 0; j < global_q_bubbles; j++)
 		{
-			uint32_t rand_dx = get_rand_in_range(min_dx, max_dx), 
-					 rand_dy = get_rand_in_range(min_dy, max_dy);
+			pid[j] = fork();
 
-			move_bubble(field, &field->bubbles[j], rand_dx, rand_dy);
+			if (-1 == pid[j])
+			{
+				perror("fork"); /* произошла ошибка */
+				exit(1); /*выход из родительского процесса*/
+			}
+			else if (0 == pid[j])
+			{
+				uint32_t rand_dx = get_rand_in_range(min_dx, max_dx), 
+						 rand_dy = get_rand_in_range(min_dy, max_dy);
 
-			itoa(field->bubbles[j].cord_x, buff);
-			strcat(buff, " ");
-			itoa(field->bubbles[j].cord_y, buff_support);
-			strcat(buff, buff_support);
-			strcat(buff, "\n");
+				move_bubble(field, &field->bubbles[j], rand_dx, rand_dy);
 
-			fputs(buff, fp);
+				itoa(field->bubbles[j].cord_x, buff);
+				strcat(buff, " ");
+				itoa(field->bubbles[j].cord_y, buff_support);
+				strcat(buff, buff_support);
+				strcat(buff, "\n");
+
+				fputs(buff, fp);
+			}
 		}
 
 		usleep(300000);
@@ -86,31 +98,32 @@ int main(void)
 
 void itoa(int num, char str_in[])
  {
-     int sign = num;
+    int sign = num;
  
     if (sign < 0)  			  /* записываем знак */
          num = -num;          /* делаем n положительным числом */
 
-    int i = 0;
-     do 					  /* генерируем цифры в обратном порядке */
-	 {       
-         str_in[i++] = num % 10 + '0';   /* берем следующую цифру */
-     } while ((num /= 10) > 0);     	 /* удаляем */
+    size_t i = 0;
+    do 					  /* генерируем цифры в обратном порядке */
+	{       
+    	str_in[i++] = num % 10 + '0';   /* берем следующую цифру */
+    } while ((num /= 10) > 0);     	 /* удаляем */
 
-     if (sign < 0)
-         str_in[i++] = '-';
+    if (sign < 0)
+        str_in[i++] = '-';
 
-     str_in[i] = '\0';
-     reverse(str_in);
+    str_in[i] = '\0';
+    reverse(str_in);
  }
 
 void reverse(char str[])
  {
-     char ch;
+    char ch;
  
-     for (int i = 0, j = strlen(str) - 1; i < j; i++, j--) {
-         ch = str[i];
-         str[i] = str[j];
-         str[j] = ch;
-     }
+    for (size_t i = 0, j = strlen(str) - 1; i < j; i++, j--) 
+	{
+        ch = str[i];
+        str[i] = str[j];
+        str[j] = ch;
+    }
  }

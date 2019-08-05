@@ -137,7 +137,6 @@ m_bool move_bubble
 	 const int32_t dx,
 	 const int32_t dy)
 {
-    m_bool is_board = false;
     if (bubble->alive && !check_overlay(field,  bubble->cord_x + dx, bubble->cord_y + dy))
     {
         field->area[bubble->cord_y][bubble->cord_x] = ' ';
@@ -145,13 +144,12 @@ m_bool move_bubble
         bubble->cord_x += dx;
         bubble->cord_y += dy;
 
-        if (((bubble->cord_x > field->size_x - 2) || (bubble->cord_y > field->size_y - 2))
-              || ((bubble->cord_x < 2) || (bubble->cord_y < 2)))
-                is_board = true;
-
-        if (is_board)
+        if (is_board(field, bubble->cord_x, bubble->cord_y))
         {
             field->quant_bubbles--;
+            bubble->cord_x = -1;
+            bubble->cord_y = -1;
+
             return bubble->alive = false;
         }
 
@@ -161,6 +159,14 @@ m_bool move_bubble
     }
     
     return false;
+}
+
+m_bool is_board
+	(const field * restrict field,
+	 const int32_t cord_x,
+	 const int32_t cord_y)
+{
+    return ((cord_x > field->size_x - 2) || (cord_y > field->size_y - 2)) || ((cord_x < 2) || (cord_y < 2));
 }
 
 //----------Support------------
