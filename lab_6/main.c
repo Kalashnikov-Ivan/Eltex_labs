@@ -23,7 +23,7 @@ int main(void)
 	size_t size_x = 10UL;
 	size_t size_y = 5UL;
 
-	uint32_t quantity_bubbles = 4;
+	uint32_t quantity_bubbles = 2;
 	if (quantity_bubbles > ((size_x - 2) * (size_y - 2)))
 		return 1;
 
@@ -32,10 +32,10 @@ int main(void)
 	system("clear");
 	print_field(field);
 	
+
 	const int32_t min_dx = -1, min_dy = -1,
 				  max_dx =  2, max_dy =  2;
 
-	uint32_t global_q_bubbles = field->quant_bubbles;
 	
 	if (NULL == (fp = fopen("exchange.buf", "w")))
 	{
@@ -44,7 +44,9 @@ int main(void)
   	}
 	
 	uint8_t buff[128];
-	uint8_t buff2[128];
+	uint8_t buff_support[128];
+
+	uint32_t global_q_bubbles = field->quant_bubbles;
 
 	while (field->quant_bubbles)
 	{
@@ -57,8 +59,8 @@ int main(void)
 
 			itoa(field->bubbles[j].cord_x, buff);
 			strcat(buff, " ");
-			itoa(field->bubbles[j].cord_y, buff2);
-			strcat(buff, buff2);
+			itoa(field->bubbles[j].cord_y, buff_support);
+			strcat(buff, buff_support);
 			strcat(buff, "\n");
 
 			fputs(buff, fp);
