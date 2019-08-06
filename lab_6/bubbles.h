@@ -61,13 +61,7 @@ m_bool is_board
 	 const int32_t cord_x,
 	 const int32_t cord_y);
 
-//----------With forks------------
-/*m_bool set_cord_bubble
-	(field * restrict field,
-	 )*/
-
 //----------Support------------
-
 int32_t get_rand_in_range
     (const int32_t min, 
      const int32_t max);

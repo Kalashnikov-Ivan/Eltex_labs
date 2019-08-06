@@ -170,7 +170,6 @@ m_bool is_board
 }
 
 //----------Support------------
-
 int32_t get_rand_in_range
     (const int32_t min, 
      const int32_t max)
