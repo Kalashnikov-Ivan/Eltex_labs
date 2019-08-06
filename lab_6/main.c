@@ -18,12 +18,11 @@ void reverse(char str[]);
 
 int main(void) 
 {
-
 	FILE *fp;
-	size_t size_x = 10UL;
-	size_t size_y = 5UL;
+	size_t size_x = 25UL;
+	size_t size_y = 11UL;
 
-	uint32_t quantity_bubbles = 2;
+	uint32_t quantity_bubbles = 5;
 	if (quantity_bubbles > ((size_x - 2) * (size_y - 2)))
 		return 1;
 
@@ -33,28 +32,42 @@ int main(void)
 	print_field(field);
 	
 
-	const int32_t min_dx = -2, min_dy = -2,
+	const int32_t min_dx = -1, min_dy = -1,
 				  max_dx =  2, max_dy =  2;
 
 	
-	if (NULL == (fp = fopen("exchange.buf", "w")))
-	{
-		printf("File %s cannot open.\n", "exchange.buf");
-		exit(1);
-  	}
-	
-	uint8_t buff[128UL];
-	uint8_t buff_support[128UL];
+	const size_t BUFF_SIZE = 128UL,
+				 MAX_FORKS = 128UL;
 
-	int16_t pid[100UL];
+	uint8_t buff[BUFF_SIZE];
+	uint8_t buff_support[BUFF_SIZE];
+
+	int16_t pid[MAX_FORKS];
 
 	uint32_t global_q_bubbles = field->quant_bubbles;
 
 	while (field->quant_bubbles)
 	{
+
+		if (NULL == (fp = fopen("exchange.buf", "w")))
+		{
+			printf("File %s cannot open.\n", "exchange.buf");
+			exit(1);
+		}
+		if(fclose(fp))
+		{ 
+			printf("Error close of file.\n");
+			exit(1);
+		}
+
+		int32_t rand_dx, 
+				rand_dy;
+
 		for (size_t j = 0; j < global_q_bubbles; j++)
 		{
 			pid[j] = fork();
+
+			srand(getpid());
 
 			if (-1 == pid[j])
 			{
@@ -63,32 +76,108 @@ int main(void)
 			}
 			else if (0 == pid[j])
 			{
-				uint32_t rand_dx = get_rand_in_range(min_dx, max_dx), 
-						 rand_dy = get_rand_in_range(min_dy, max_dy);
+
+				if (NULL == (fp = fopen("exchange.buf", "a")))
+				{
+					printf("File %s cannot open.\n", "exchange.buf");
+					exit(1);
+				}
+
+				rand_dx = get_rand_in_range(min_dx, max_dx); 
+				rand_dy = get_rand_in_range(min_dy, max_dy);
 
 				move_bubble(field, &field->bubbles[j], rand_dx, rand_dy);
 
-				itoa(field->bubbles[j].cord_x, buff);
+				itoa(j, buff);
+				strcat(buff, " ");
+				itoa(field->bubbles[j].cord_x, buff_support);
+				strcat(buff, buff_support);
 				strcat(buff, " ");
 				itoa(field->bubbles[j].cord_y, buff_support);
 				strcat(buff, buff_support);
+				strcat(buff, " ");
 				strcat(buff, "\n");
 
 				fputs(buff, fp);
+
+				if(fclose(fp))
+				{ 
+					printf("Error close of file.\n");
+					exit(1);
+				}
+
+				exit(0);
 			}
 		}
 
-		usleep(300000);
+		if (NULL == (fp = fopen("exchange.buf", "r")))
+		{
+			printf("File %s cannot open.\n", "exchange.buf");
+			exit(1);
+		}
+
+		size_t cur_bubble = 0;
+		for (size_t i = 0; i < global_q_bubbles; i++)
+		{
+       		waitpid(pid[i], NULL, 0);
+			
+			fgets(buff, BUFF_SIZE, fp);
+
+			size_t j = 0, k = 0;
+			while (buff[j] != ' ')
+			{
+				buff_support[k] = buff[j];
+				j++; k++;
+			}
+			cur_bubble = atoi(buff_support);
+			strcpy(buff_support, "");
+
+			if (field->bubbles[cur_bubble].alive)
+			{
+				field->area[field->bubbles[cur_bubble].cord_y][field->bubbles[cur_bubble].cord_x] = ' ';
+
+				j++; k = 0;
+				while (buff[j] != ' ')
+				{
+					buff_support[k] = buff[j];
+					j++; k++;
+				}
+				field->bubbles[cur_bubble].cord_x = atoi(buff_support);
+				strcpy(buff_support, "");
+
+				j++; k = 0;
+				while (buff[j] != '\0')
+				{
+					buff_support[k] = buff[j];
+					j++; k++;
+				}
+				field->bubbles[cur_bubble].cord_y = atoi(buff_support);
+				strcpy(buff_support, "");
+
+				if (is_board(field, field->bubbles[cur_bubble].cord_x, field->bubbles[cur_bubble].cord_y) && field->bubbles[cur_bubble].alive)
+				{
+					field->bubbles[cur_bubble].alive = false;
+					field->quant_bubbles--;
+				}
+				else if (field->bubbles[cur_bubble].alive)
+					field->area[field->bubbles[cur_bubble].cord_y][field->bubbles[cur_bubble].cord_x] = 'o';
+			}
+		}
+
+		if(fclose(fp))
+		{ 
+			printf("Error close of file.\n");
+			exit(1);
+		}
+		
+
+		usleep(600000);
 		system("clear");
 		print_field(field);
-	}
-	
 
-
-	if(fclose(fp))
-	{ 
-		printf("Error close of file.\n");
-		exit(1);
+		for (int i = 0; i < global_q_bubbles; i++)
+			printf("%d: %d %d\n", i, field->bubbles[i].cord_x, field->bubbles[i].cord_y);
+		//strcat(buff_support, "");
 	}
 
 	free_field(field);
