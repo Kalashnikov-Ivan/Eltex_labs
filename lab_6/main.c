@@ -13,31 +13,29 @@
 
 #include "bubbles.h"
 
+const int32_t min_dx = -1, min_dy = -1,
+			  max_dx =  2, max_dy =  2;
+
+const size_t BUFF_SIZE = 128UL,
+	 		 MAX_FORKS = 128UL;
+
 void itoa(int num, char str_in[]);
 void reverse(char str[]);
 
 int main(void) 
 {
 	FILE *fp;
-	size_t size_x = 25UL;
-	size_t size_y = 11UL;
+	size_t size_x = 30UL;
+	size_t size_y = 10UL;
 
 	uint32_t quantity_bubbles = 5;
-	if (quantity_bubbles > ((size_x - 2) * (size_y - 2)))
+	if (quantity_bubbles > ((size_x - 2) * (size_y - 2)) && quantity_bubbles > MAX_FORKS)
 		return 1;
 
 	field *field = init_field(size_x, size_y, quantity_bubbles);
 
 	system("clear");
 	print_field(field);
-	
-
-	const int32_t min_dx = -1, min_dy = -1,
-				  max_dx =  2, max_dy =  2;
-
-	
-	const size_t BUFF_SIZE = 128UL,
-				 MAX_FORKS = 128UL;
 
 	uint8_t buff[BUFF_SIZE];
 	uint8_t buff_support[BUFF_SIZE];
@@ -71,8 +69,8 @@ int main(void)
 
 			if (-1 == pid[j])
 			{
-				perror("fork"); /* произошла ошибка */
-				exit(1); /*выход из родительского процесса*/
+				perror("fork");
+				exit(1);
 			}
 			else if (0 == pid[j])
 			{
@@ -88,6 +86,7 @@ int main(void)
 
 				move_bubble(field, &field->bubbles[j], rand_dx, rand_dy);
 
+				//Creating string which will put in exchange file
 				itoa(j, buff);
 				strcat(buff, " ");
 				itoa(field->bubbles[j].cord_x, buff_support);
@@ -123,43 +122,25 @@ int main(void)
 			
 			fgets(buff, BUFF_SIZE, fp);
 
-			size_t j = 0, k = 0;
-			while (buff[j] != ' ')
-			{
-				buff_support[k] = buff[j];
-				j++; k++;
-			}
-			cur_bubble = atoi(buff_support);
-			strcpy(buff_support, "");
+			uint8_t *tmp = strtok(buff, " ");
+			cur_bubble = atoi(tmp);
 
 			if (field->bubbles[cur_bubble].alive)
 			{
 				field->area[field->bubbles[cur_bubble].cord_y][field->bubbles[cur_bubble].cord_x] = ' ';
 
-				j++; k = 0;
-				while (buff[j] != ' ')
-				{
-					buff_support[k] = buff[j];
-					j++; k++;
-				}
-				field->bubbles[cur_bubble].cord_x = atoi(buff_support);
-				strcpy(buff_support, "");
+				tmp = strtok(NULL, " ");
+				field->bubbles[cur_bubble].cord_x = atoi(tmp);
 
-				j++; k = 0;
-				while (buff[j] != '\0')
-				{
-					buff_support[k] = buff[j];
-					j++; k++;
-				}
-				field->bubbles[cur_bubble].cord_y = atoi(buff_support);
-				strcpy(buff_support, "");
+				tmp = strtok(NULL, " ");
+				field->bubbles[cur_bubble].cord_y = atoi(tmp);
 
-				if (is_board(field, field->bubbles[cur_bubble].cord_x, field->bubbles[cur_bubble].cord_y) && field->bubbles[cur_bubble].alive)
+				if (is_board(field, field->bubbles[cur_bubble].cord_x, field->bubbles[cur_bubble].cord_y))
 				{
 					field->bubbles[cur_bubble].alive = false;
 					field->quant_bubbles--;
 				}
-				else if (field->bubbles[cur_bubble].alive)
+				else
 					field->area[field->bubbles[cur_bubble].cord_y][field->bubbles[cur_bubble].cord_x] = 'o';
 			}
 		}
@@ -170,14 +151,12 @@ int main(void)
 			exit(1);
 		}
 		
-
 		usleep(600000);
 		system("clear");
 		print_field(field);
 
 		for (int i = 0; i < global_q_bubbles; i++)
-			printf("%d: %d %d\n", i, field->bubbles[i].cord_x, field->bubbles[i].cord_y);
-		//strcat(buff_support, "");
+			printf("%d: x = %2d | y = %2d\n", i + 1, field->bubbles[i].cord_x, field->bubbles[i].cord_y);
 	}
 
 	free_field(field);

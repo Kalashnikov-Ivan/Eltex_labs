@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 //For forks
 #include <unistd.h> 
 #include <sys/types.h>
@@ -32,15 +33,16 @@ int main(void) {
 	struct test t1;
 	printf("test: %d\n", t1.a);*/
 
-	FILE *fp = fopen("test", "a+");
+    char str[] = "66 1 2";
 
-	char buff[128];
+    char *pch = strtok(str, " ");
 
-	itoa(4266, buff);
-
-	fputs(buff, fp);
-
-	printf("%s\n", buff);
+    while (pch != NULL)
+    {
+        printf("%d\n", atoi(pch));
+        pch = strtok(NULL, " ");
+    }
+    
 	
 	return 0;
 }
