@@ -25,10 +25,10 @@ void reverse(char str[]);
 int main(void) 
 {
 	FILE *fp;
-	const size_t size_x = 45UL;
-	const size_t size_y = 17UL;
+	const size_t size_x = 25UL;
+	const size_t size_y = 10UL;
 
-	const uint32_t quantity_bubbles = 35;
+	const uint32_t quantity_bubbles = 7;
 	if (quantity_bubbles > ((size_x - 2) * (size_y - 2)) && quantity_bubbles > MAX_FORKS)
 		return 1;
 
@@ -155,7 +155,7 @@ int main(void)
 		system("clear");
 		print_field(field);
 
-		if (0)
+		if (1)
 			for (int i = 0; i < global_q_bubbles; i++)
 				printf("%d: x = %2d | y = %2d\n", i + 1, field->bubbles[i].cord_x, field->bubbles[i].cord_y);
 	}
