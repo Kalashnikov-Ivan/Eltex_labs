@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stddef.h> //For size_t, ptrdiff_t and so on...
 //#include <stdint.h> //For uint8_t and so on...
-#include <stdbool.h>
 
 #include "bubbles.h"
 
