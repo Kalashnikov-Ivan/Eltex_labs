@@ -122,15 +122,6 @@ void print_field
     }
 }
 
-void update_field
-	(field * restrict field, 
-	 const uint8_t ch, 
-	 const int32_t cord_x,
-	 const int32_t cord_y)
-{
-    field->area[cord_y][cord_x] = ch;
-}
-
 m_bool move_bubble
 	(field * restrict field,
      bubble * bubble, 
@@ -170,7 +161,6 @@ m_bool is_board
 }
 
 //----------Support------------
-
 int32_t get_rand_in_range
     (const int32_t min, 
      const int32_t max)

@@ -43,12 +43,6 @@ uint8_t check_overlay
 void print_field
 	(const field * restrict field);
 
-void update_field
-	(field * restrict field, 
-	 const uint8_t ch, 
-	 const int32_t cord_x,
-	 const int32_t cord_y);
-
 //----------Bubble------------
 m_bool move_bubble
 	(field * restrict field,
