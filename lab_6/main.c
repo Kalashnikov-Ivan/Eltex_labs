@@ -40,7 +40,7 @@ int main(void)
 	uint8_t buff[BUFF_SIZE];
 	uint8_t buff_support[BUFF_SIZE];
 
-	int16_t pid[MAX_FORKS];
+	pid_t pid[MAX_FORKS];
 
 	uint32_t global_q_bubbles = field->quant_bubbles;
 
