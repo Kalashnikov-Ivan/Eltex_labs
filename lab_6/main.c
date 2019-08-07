@@ -25,10 +25,10 @@ void reverse(char str[]);
 int main(void) 
 {
 	FILE *fp;
-	size_t size_x = 30UL;
-	size_t size_y = 10UL;
+	const size_t size_x = 30UL;
+	const size_t size_y = 10UL;
 
-	uint32_t quantity_bubbles = 5;
+	const uint32_t quantity_bubbles = 5;
 	if (quantity_bubbles > ((size_x - 2) * (size_y - 2)) && quantity_bubbles > MAX_FORKS)
 		return 1;
 

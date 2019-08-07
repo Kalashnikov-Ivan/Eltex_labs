@@ -12,7 +12,7 @@ typedef struct {
 	int32_t cord_x;
 	int32_t cord_y;
 
-	uint8_t alive;
+	m_bool alive;
 } __attribute__((packed)) bubble;
 
 typedef struct {
@@ -42,12 +42,6 @@ uint8_t check_overlay
 
 void print_field
 	(const field * restrict field);
-
-void update_field
-	(field * restrict field, 
-	 const uint8_t ch, 
-	 const int32_t cord_x,
-	 const int32_t cord_y);
 
 //----------Bubble------------
 m_bool move_bubble
