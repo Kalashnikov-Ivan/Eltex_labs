@@ -1,13 +1,16 @@
+#ifndef stdint.h
+	#include <stdint.h> //For uint8_t and so on...
+#endif
 
-#include <stdint.h> //For uint8_t and so on...
-
+//-----------------My bool-------------------
 #define true 1
 #define false 0
 
 typedef uint8_t m_bool;
 
 //-----------------Types-------------------
-typedef struct {
+typedef struct 
+{
 	uint8_t ch;
 	int32_t cord_x;
 	int32_t cord_y;
@@ -15,7 +18,8 @@ typedef struct {
 	m_bool alive;
 } __attribute__((packed)) bubble;
 
-typedef struct {
+typedef struct 
+{
 	uint8_t ** restrict area;
 	size_t size_x;
 	size_t size_y;
