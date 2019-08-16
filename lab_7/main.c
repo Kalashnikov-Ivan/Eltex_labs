@@ -49,8 +49,16 @@ int main(void)
 
 		for (size_t i = 0; i < quantity_workers; i++)
 		{
-			pid[i] = fork();
 			mkfifo(FIFO_GOLD, 0666);
+
+			write_fd = open(FIFO_GOLD, O_WRONLY | O_NONBLOCK);
+
+			sprintf(buff, "%d", gold_in_mine - (i * workers[i].cargo));
+			write(write_fd, buff, BUFF_SIZE);
+
+			close(write_fd);
+
+			pid[i] = fork();
 
 			srand(getpid());
 
@@ -67,7 +75,7 @@ int main(void)
 					time_way = get_rand_in_range(1, 3);
 					sleep(time_way); //Go to mine
 
-					read_fd = open(FIFO_GOLD, O_RDONLY);
+					read_fd = open(FIFO_GOLD, O_RDONLY | O_NONBLOCK);
 
 					read(read_fd, buff, BUFF_SIZE);
 					gold_in_mine = atoi(buff);
@@ -84,7 +92,7 @@ int main(void)
 
 					printf("PID: %d Worker: %d, gold in mine: %d\n\n", getpid(), i, gold_in_mine);
 
-					write_fd = open(FIFO_GOLD, O_WRONLY | O_NONBLOCK);
+					write_fd = open(FIFO_GOLD, O_WRONLY);
 
 					sprintf(buff, "%d", gold_in_mine);
 					write(write_fd, buff, BUFF_SIZE);
@@ -97,13 +105,6 @@ int main(void)
 
 				exit(0);
 			}
-
-			write_fd = open(FIFO_GOLD, O_WRONLY | O_NONBLOCK);
-
-			sprintf(buff, "%d", gold_in_mine - (i * workers[i].cargo));
-			write(write_fd, buff, BUFF_SIZE);
-
-			close(write_fd);
 		}
 
 		while (gold_in_mine)
