@@ -62,7 +62,7 @@ int main(void)
 			else if (0 == pid[i])
 			{
 				uint32_t time_way;
-				while (gold_in_mine)
+				while (true)
 				{
 					time_way = get_rand_in_range(1, 3);
 					sleep(time_way); //Go to mine
@@ -74,16 +74,6 @@ int main(void)
 
 					close(read_fd);
 					
-					if (gold_in_mine < 0)
-						break;
-
-					if (!(gold_in_mine == workers[i].cargo))
-						gold_in_mine -= (gold_in_mine + workers[i].cargo % gold_in_mine) % gold_in_mine;
-					else
-						gold_in_mine = 0;
-
-					printf("PID: %d Worker: %d, gold in mine: %d\n\n", getpid(), i, gold_in_mine);
-
 					write_fd = open(FIFO_GOLD, O_WRONLY | O_NONBLOCK);
 
 					sprintf(buff, "%d", gold_in_mine);
@@ -95,7 +85,7 @@ int main(void)
 					sleep(time_way); //Go from mine
 				}
 
-				exit(0);
+				exit(1); //doesn't make sense but just in case 
 			}
 
 			write_fd = open(FIFO_GOLD, O_WRONLY | O_NONBLOCK);
@@ -149,3 +139,5 @@ int main(void)
 	free(pid);
 	return 0;
 }
+
+//printf("PID: %d Worker: %d, gold in mine: %d\n\n", getpid(), i, gold_in_mine);
