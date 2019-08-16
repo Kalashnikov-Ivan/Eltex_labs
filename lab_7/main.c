@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <signal.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -29,28 +30,21 @@ int main(void)
 	int64_t gold_in_mine = 100;
 	const uint16_t quantity_workers = 3, cargo = 10;
 
+	int read_fd, write_fd;
+
 	if (quantity_workers > MAX_FORKS)
 		return 1;
-
-	unit_worker *workers = (unit_worker*) malloc(sizeof(unit_worker) * quantity_workers);
-	if (NULL == workers)
-		return 1;
-
-	for (size_t i = 0; i < quantity_workers; i++)
-		workers[i].cargo = cargo;
-
 
 	pid_t *pid = (pid_t*) malloc(sizeof(pid_t) * quantity_workers);
 	if (NULL == pid)
 		return 1;
 
-	int read_fd, write_fd;
-	char buff[BUFF_SIZE];
 
 		for (size_t i = 0; i < quantity_workers; i++)
 		{
-			pid[i] = fork();
 			mkfifo(FIFO_GOLD, 0666);
+
+			pid[i] = fork();
 
 			srand(getpid());
 
@@ -64,80 +58,161 @@ int main(void)
 				uint32_t time_way;
 				while (true)
 				{
-					time_way = get_rand_in_range(1, 3);
+					time_way = get_rand_in_range(1, 7);
 					sleep(time_way); //Go to mine
-
-					read_fd = open(FIFO_GOLD, O_RDONLY);
-
-					read(read_fd, buff, BUFF_SIZE);
-					gold_in_mine = atoi(buff);
-
-					close(read_fd);
 					
 					write_fd = open(FIFO_GOLD, O_WRONLY | O_NONBLOCK);
 
-					sprintf(buff, "%d", gold_in_mine);
-					write(write_fd, buff, BUFF_SIZE);
+					write(write_fd, &cargo, sizeof(uint16_t));
 
 					close(write_fd);
 
-					time_way = get_rand_in_range(1, 3);
+					time_way = get_rand_in_range(1, 7);
 					sleep(time_way); //Go from mine
 				}
 
 				exit(1); //doesn't make sense but just in case 
 			}
-
-			write_fd = open(FIFO_GOLD, O_WRONLY | O_NONBLOCK);
-
-			sprintf(buff, "%d", gold_in_mine - (i * workers[i].cargo));
-			write(write_fd, buff, BUFF_SIZE);
-
-			close(write_fd);
 		}
 
-		while (gold_in_mine)
+		uint16_t current_cargo, tmp;
+		while (true) 
 		{
-			int64_t tmp;
-			for (uint32_t i = 0; i < quantity_workers; i++)
+			for (size_t i = 0; i < quantity_workers; i++) 
 			{
+				current_cargo = 0;
+
+				if (gold_in_mine <= 0) 
+				{
+					for (size_t j = 0; j < quantity_workers; j++)
+						kill(pid[j], SIGKILL);
+					
+					printf("Now mine is empty...\n");
+
+					remove(FIFO_GOLD);
+
+					free(pid);
+
+					return 0;
+				}
+
 				read_fd = open(FIFO_GOLD, O_RDONLY);
 
-				read(read_fd, buff, BUFF_SIZE);
-				int64_t tmp = atoi(buff);
-				if (tmp < gold_in_mine)
-					gold_in_mine = tmp;
+				read(read_fd, &tmp, sizeof(uint16_t));
 
 				close(read_fd);
-			}
-			
-			if (gold_in_mine < 0)
-				break;
 
-			for (uint32_t i = 0; i < quantity_workers; i++)
-			{
-				write_fd = open(FIFO_GOLD, O_WRONLY | O_NONBLOCK);
+				while (tmp-- != 0 && gold_in_mine-- != 0)
+					current_cargo++;
 
-				sprintf(buff, "%d", gold_in_mine);
-				write(write_fd, buff, BUFF_SIZE);
-
-				close(write_fd);
+				printf ("Worker[%d]: I got %d gold, and left in the mine %d gold\n", 
+						i, current_cargo, gold_in_mine);
 			}
 		}
-		
+}
+
+/*
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#include <stdbool.h>
+#include <stddef.h> //For size_t, ptrdiff_t and so on...
+#include <stdint.h> //For uint8_t and so on...
+
+#include "warcraft.h"
+
+#define FIFO_GOLD "./exchange_gold_main.fifo"
+#define MAX_FORKS 128UL
+#define BUFF_SIZE 256UL
+
+int main(void) 
+{
+	int64_t gold_in_mine = 100;
+	const uint16_t quantity_workers = 3, cargo = 10;
+
+	int fd_pipe[quantity_workers][2];
+
+	if (quantity_workers > MAX_FORKS)
+		return 1;
+
+	pid_t *pid = (pid_t*) malloc(sizeof(pid_t) * quantity_workers);
+	if (NULL == pid)
+		return 1;
+
 
 		for (size_t i = 0; i < quantity_workers; i++)
 		{
-       		waitpid(pid[i], NULL, WNOHANG);
+			pipe(fd_pipe[i]);
+
+			pid[i] = fork();
+
+			srand(getpid());
+
+			if (-1 == pid[i])
+			{
+				perror("fork");
+				exit(1);
+			}
+			else if (0 == pid[i])
+			{
+				close(fd_pipe[i][0]);
+
+				while (true)
+				{
+					sleep(get_rand_in_range(1, 4)); //Go to mine
+					
+					write(fd_pipe[i][1], &len, sizeof (int));
+
+					sleep(get_rand_in_range(1, 4)); //Go from mine
+				}
+
+				exit(1); //doesn't make sense but just in case 
+			}
 		}
 
-	printf("Now mine is empty...\n");
+		uint16_t current_cargo, tmp;
+		while (true) 
+		{
+			current_cargo = 0;
 
-	remove(FIFO_GOLD);
+			for (size_t i = 0; i < quantity_workers; i++) 
+			{
+				if (gold_in_mine <= 0) 
+				{
+					for (size_t j = 0; j < quantity_workers; j++)
+						kill(pid[j], SIGKILL);
+					
+					printf("Now mine is empty...\n");
 
-	free(workers);
-	free(pid);
-	return 0;
+					remove(FIFO_GOLD);
+
+					free(pid);
+
+					return 0;
+				}
+
+				read_fd = open(FIFO_GOLD, O_RDONLY);
+
+				read(read_fd, &tmp, sizeof(uint16_t));
+
+				close(read_fd);
+
+				while (tmp-- != 0 && gold_in_mine-- != 0)
+					current_cargo++;
+
+				printf ("Worker[%d]: I got %d gold, and left in the mine %d gold\n", 
+						i, current_cargo, gold_in_mine);
+			}
+		}
 }
 
 //printf("PID: %d Worker: %d, gold in mine: %d\n\n", getpid(), i, gold_in_mine);
+*/
