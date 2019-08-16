@@ -1,6 +1,7 @@
 # игнорировать все файлы в каталогах /
 pro/
 Theory/
+test/
 .vscode/
 
 # Ignoring all obj files in all catalogsсистемные требования
