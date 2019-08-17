@@ -34,12 +34,12 @@ int main(int argc, char *argv[])
 	if (argc < 2) 
 	{
 		printf 
-			("Are set default settings:\nGold in mine = %d\nWorkers = %d\nCargo = %d\n\n", 
+			("\nAre set default settings:\nGold in mine = %ld\nWorkers = %d\nCargo = %d\n\n", 
 			 gold_in_mine, quantity_workers, cargo);
 		printf 
 			("If you want to set your settings, then restart the programm and set this in this format:\n\n");
 		printf 
-			("./lab_7 <gold_in_mine> <workers> <cargo>\n");
+			("./lab_7 <gold_in_mine> <workers> <cargo>\n\n");
 
 		sleep(2);
 	}
@@ -59,72 +59,73 @@ int main(int argc, char *argv[])
 		return 1;
 
 
-		for (size_t i = 0; i < quantity_workers; i++)
+	for (size_t i = 0; i < quantity_workers; i++)
+	{
+		mkfifo(FIFO_GOLD, 0666);
+
+		pid[i] = fork();
+
+		srand(getpid());
+
+		if (-1 == pid[i])
 		{
-			mkfifo(FIFO_GOLD, 0666);
-
-			pid[i] = fork();
-
-			srand(getpid());
-
-			if (-1 == pid[i])
-			{
-				perror("fork");
-				exit(1);
-			}
-			else if (0 == pid[i])
-			{
-
-				while (true)
-				{
-					sleep(get_rand_in_range(1, 4)); //Go to mine
-
-					write(write_fd, &cargo, sizeof(uint16_t));
-
-					close(write_fd);
-
-					sleep(get_rand_in_range(1, 4)); //Go from mine
-				}
-
-				exit(1); //doesn't make sense but just in case 
-			}
+			perror("fork");
+			exit(1);
 		}
-
-		uint16_t current_cargo, tmp;
-		while (true) 
+		else if (0 == pid[i])
 		{
-			for (size_t i = 0; i < quantity_workers; i++) 
+
+			while (true)
 			{
-				current_cargo = 0;
+				sleep(get_rand_in_range(1, 4)); //Go to mine
+				write_fd = open(FIFO_GOLD, O_WRONLY);
 
-				if (gold_in_mine <= 0) 
-				{
-					for (size_t j = 0; j < quantity_workers; j++)
-						kill(pid[j], SIGKILL);
-					
-					printf("Now mine is empty...\n");
+				write(write_fd, &cargo, sizeof(uint16_t));
 
-					remove(FIFO_GOLD);
+				close(write_fd);
 
-					free(pid);
-
-					return 0;
-				}
-
-				read_fd = open(FIFO_GOLD, O_RDONLY);
-
-				read(read_fd, &tmp, sizeof(uint16_t));
-
-				close(read_fd);
-
-				while (tmp-- != 0 && gold_in_mine-- > 0)
-					current_cargo++;
-
-				if (gold_in_mine < 0)
-					gold_in_mine = 0;
-
-				printf ("Worker[%d]: I got %d gold, and left in the mine %d gold\n", 
-						i, current_cargo, gold_in_mine);
+				sleep(get_rand_in_range(1, 4)); //Go from mine
 			}
+
+			exit(1); //doesn't make sense but just in case 
 		}
+	}
+
+	uint16_t current_cargo, tmp;
+	while (true) 
+	{
+		for (size_t i = 0; i < quantity_workers; i++) 
+		{
+			current_cargo = 0;
+
+			if (gold_in_mine <= 0) 
+			{
+				for (size_t j = 0; j < quantity_workers; j++)
+					kill(pid[j], SIGKILL);
+				
+				printf("Now mine is empty...\n");
+
+				remove(FIFO_GOLD);
+
+				free(pid);
+
+				return 0;
+			}
+
+			read_fd = open(FIFO_GOLD, O_RDONLY);
+
+			read(read_fd, &tmp, sizeof(uint16_t));
+
+			close(read_fd);
+
+			while (tmp-- != 0 && gold_in_mine-- > 0)
+				current_cargo++;
+
+			if (gold_in_mine < 0)
+				gold_in_mine = 0;
+
+			printf ("Worker[%ld]: I got %d gold, and left in the mine %ld gold\n", 
+					i, current_cargo, gold_in_mine);
+		}
+	}
 }

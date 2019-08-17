@@ -7,8 +7,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <stdbool.h>
 #include <stddef.h> //For size_t, ptrdiff_t and so on...
@@ -23,25 +23,57 @@
 #include <wait.h>
 #include <fcntl.h>
 
-#define MAX_LEN 32UL
+#define MAX_FORKS 128UL
 
 typedef struct 
 {
 	long mtype;
 	uint8_t mtext[1];
-} msg_buff;
+} msg_buff_t;
 
-typedef struct
+int main(int argc, char *argv[]) 
 {
-	uint32_t command_one_units;
-	uint8_t  command_one_name[MAX_LEN];	
+	size_t quantity_battlefields = 3;
 
-	uint32_t command_two_units;
-	uint8_t  command_two_name[MAX_LEN];	
-} battlefield;
+	if (argc < 2) 
+	{
+		printf 
+			("Are set default settings:\nQuantity battlefields = %ld\n\n", 
+			 quantity_battlefields);
+		printf 
+			("If you want to set your settings, then restart the programm and set this in this format:\n\n");
+		printf 
+			("./lab_8 <quantity_battlefields>\n");
 
-int main(void) 
-{
-	
+		sleep(2);
+	}
+	else
+	{
+		quantity_battlefields = atoi(argv[1]);
+	}
+
+
+	if (quantity_battlefields > MAX_FORKS)
+	{
+		perror("\nToo much tasks for forks\n");
+		return 1;
+	}
+
+	pid_t *pid = (pid_t*)malloc(sizeof(pid_t) * quantity_battlefields);
+	if (NULL == pid)
+		return 1;
+
+	//For msg IPC
+	const key_t key = ftok("./lab_8", 42);
+	const int msg_type = 1;
+	msg_buff_t msg_buff;
+
+	int msg_id = msgget(key, IPC_CREAT | 0660);
+	if (-1 == msg_id)
+	{
+		perror("Error: failed to get msd_id ");
+		return 1;
+	}
+ 
 	return 0;
 }
