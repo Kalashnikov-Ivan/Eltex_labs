@@ -23,13 +23,21 @@
 #include <wait.h>
 #include <fcntl.h>
 
-#define MAX_FORKS 128UL
+#include "battlefield.h"
 
+#define MAX_FORKS 128UL
+#define DEFAULT_UNITS 100
+
+//MSG
 typedef struct 
 {
-	long mtype;
-	uint8_t mtext[1];
+	long msg_type;
+	uint8_t msd_data[1];
 } msg_buff_t;
+
+void send_message(int msg_id, msg_buff_t * restrict msg_buff, long msg_type, void *data, size_t size_data);
+void read_message(int msg_id, msg_buff_t * restrict msg_buff, long msg_type, void *data, size_t size_data);
+
 
 int main(int argc, char *argv[]) 
 {
@@ -43,7 +51,7 @@ int main(int argc, char *argv[])
 		printf 
 			("If you want to set your settings, then restart the programm and set this in this format:\n\n");
 		printf 
-			("./lab_8 <quantity_battlefields>\n");
+			("./lab_8 <quantity_battlefields>\n\n");
 
 		sleep(2);
 	}
@@ -52,12 +60,12 @@ int main(int argc, char *argv[])
 		quantity_battlefields = atoi(argv[1]);
 	}
 
-
 	if (quantity_battlefields > MAX_FORKS)
 	{
 		perror("\nToo much tasks for forks\n");
 		return 1;
 	}
+
 
 	pid_t *pid = (pid_t*)malloc(sizeof(pid_t) * quantity_battlefields);
 	if (NULL == pid)
@@ -74,6 +82,74 @@ int main(int argc, char *argv[])
 		perror("Error: failed to get msd_id ");
 		return 1;
 	}
- 
+	
+	battlefield ** battlefields = (battlefield**)malloc(sizeof(battlefield*) * quantity_battlefields);
+
+	for (size_t i = 0; i < quantity_battlefields; i++)
+	{
+		battlefields[i] = init_battlefield
+								(DEFAULT_UNITS, "Command 1",
+								 DEFAULT_UNITS, "Command 2");
+	}
+
+
+	for (size_t i = 0; i < quantity_battlefields; i++)
+	{
+		pid[i] = fork();
+		srand(getpid());
+
+		if (-1 == pid[i])
+		{
+			fprintf(stderr, "Error: fork %ld failed", i);
+			exit(1);
+		}
+		else if (0 == pid[i])
+		{
+			printf("Battlefield %ld has been started!\n", i);
+			while (battlefields[i]->command_one_units > 0 && battlefields[i]->command_two_units > 0)
+			{
+				sleep(2);
+				printf("Battlefield %ld: \n", i);
+
+				battle(battlefields[i]);
+
+				printf("Total: %s = %d VS %s = %d\n", 
+						battlefields[i]->command_one_name, battlefields[i]->command_one_units,
+						battlefields[i]->command_two_name, battlefields[i]->command_two_units);
+			}
+
+			exit(1);
+		}
+	}
+
+
+	for (size_t i = 0; i < quantity_battlefields; i++)
+	{
+		waitpid(pid[i], NULL, 0);
+	}
+
+	for (size_t i = 0; i < quantity_battlefields; i++)
+		free(battlefields[i]);
+
+	free(battlefields);
 	return 0;
 }
+/*
+void send_message(int msg_id, msg_buff_t * restrict msg_buff, long msg_type, void *data, size_t size_data)
+{
+	qbuf->mtype = type;
+	strcpy(qbuf->mtext, text);
+
+	if ((msgsnd(qid, (struct msgbuf *)qbuf,
+		    strlen(qbuf->mtext) + 1, 0)) == -1) {
+		perror("msgsnd");
+		exit(1);
+	}
+}
+
+void read_message(int msg_id, msg_buff_t * restrict msg_buff, long msg_type, void *data, size_t size_data)
+{
+	qbuf->mtype = type;
+	msgrcv(qid, (struct msgbuf *)qbuf, MAX_SEND_SIZE, type, 0);
+	strcpy(msg, qbuf->mtext);
+}*/

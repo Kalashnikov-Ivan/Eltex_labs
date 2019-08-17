@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
 		if (-1 == pid[i])
 		{
-			perror("fork");
+			fprintf(stderr, "Error: fork %ld failed", i);
 			exit(1);
 		}
 		else if (0 == pid[i])

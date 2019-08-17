@@ -11,8 +11,8 @@
 //---------------Functions-----------------
 
 battlefield* init_battlefield
-    (const uint32_t command_one_units, const uint8_t * restrict command_one_name,
-     const uint32_t command_two_units, const uint8_t * restrict command_two_name)
+    (const int32_t command_one_units, const uint8_t * restrict command_one_name,
+     const int32_t command_two_units, const uint8_t * restrict command_two_name)
 {
     battlefield* result_ptr = (battlefield*)malloc(sizeof(battlefield));
 
@@ -33,4 +33,23 @@ battlefield* init_battlefield
     strcpy(result_ptr->command_two_name, command_two_name);
 
     return result_ptr;
+}
+
+void battle
+    (battlefield * restrict battlefield)
+{
+    uint32_t new_units = rand() % 25, damage = rand() % 35;
+
+    printf("\tThe %s a got %d units!... and", battlefield->command_one_name, new_units);
+    printf("lost %d units...\n", battlefield->command_one_name, damage);
+
+    battlefield->command_one_units += new_units; //Can be like new_units - damage = dunits, but it's uint_t
+    battlefield->command_one_units -= damage;
+
+    new_units = rand() % 25; damage = rand() % 35;
+    printf("\tThe %s a got %d units!... and", battlefield->command_two_name, new_units);
+    printf("lost %d units...\n", battlefield->command_two_name, damage);
+
+    battlefield->command_one_units += new_units;
+    battlefield->command_one_units -= damage;
 }
