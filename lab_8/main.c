@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 			printf("Battlefield %ld has been started!\n", i);
 			while (battlefields[i]->command_one_units > 0 && battlefields[i]->command_two_units > 0)
 			{
-				sleep(2);
+				//sleep(2);
 				//printf("Battlefield %ld: \n", i);
 
 				battle(battlefields[i]);
@@ -133,19 +133,32 @@ int main(int argc, char *argv[])
 	{
 		read_message(msg_id, &msg_buff, msg_type, &current_battlefield);
 
-		printf("Battlefield %ld: %s = %4d VS %s = %4d\n", current_battlefield.battfield_id,
+		sleep(1);
+
+		if (current_battlefield.command_one_units <= 0)
+		{
+			current_battlefield.command_one_units = 0;
+			printf("Battle [%d] is over. %s won!\n", 
+					current_battlefield.battfield_id, current_battlefield.command_two_name);
+			current_quant_battlef--;
+		}
+		else if (current_battlefield.command_two_units <= 0)
+		{
+			current_battlefield.command_two_units = 0;
+			printf("Battle [%d] is over. %s won!\n", 
+					current_battlefield.battfield_id, current_battlefield.command_one_name);
+			current_quant_battlef--;
+		}
+
+		printf("Battlefield %d: %s = %3d VS %s = %3d\n", current_battlefield.battfield_id,
 				current_battlefield.command_one_name, current_battlefield.command_one_units,
 				current_battlefield.command_two_name, current_battlefield.command_two_units);
-
-		if (current_battlefield.command_one_units <= 0 || current_battlefield.command_two_units <= 0)
-			current_quant_battlef--;
 	}
 
+	printf("All battles is over...\n");
 
 	for (size_t i = 0; i < quantity_battlefields; i++)
-	{
 		waitpid(pid[i], NULL, 0);
-	}
 
 	for (size_t i = 0; i < quantity_battlefields; i++)
 		free(battlefields[i]);
