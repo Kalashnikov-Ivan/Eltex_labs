@@ -32,11 +32,11 @@
 typedef struct 
 {
 	long msg_type;
-	uint8_t msd_data[1];
+	battlefield_t msd_data;
 } msg_buff_t;
 
-void send_message(int msg_id, msg_buff_t * restrict msg_buff, long msg_type, void *data, size_t size_data);
-void read_message(int msg_id, msg_buff_t * restrict msg_buff, long msg_type, void *data, size_t size_data);
+void send_message(int msg_id, msg_buff_t *msg_buff, long msg_type, void *data, size_t size_data);
+void read_message(int msg_id, msg_buff_t *msg_buff_src, long msg_type, void *dest);
 
 
 int main(int argc, char *argv[]) 
@@ -83,12 +83,13 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	
-	battlefield ** battlefields = (battlefield**)malloc(sizeof(battlefield*) * quantity_battlefields);
+	battlefield_t ** battlefields = (battlefield_t**)malloc(sizeof(battlefield_t*) * quantity_battlefields);
 
-	for (size_t i = 0; i < quantity_battlefields; i++)
+	for (size_t battlefield_id = 0; battlefield_id < quantity_battlefields; battlefield_id++)
 	{
-		battlefields[i] = init_battlefield
-								(DEFAULT_UNITS, "Command 1",
+		battlefields[battlefield_id] = init_battlefield
+								( battlefield_id,
+								 DEFAULT_UNITS, "Command 1",
 								 DEFAULT_UNITS, "Command 2");
 	}
 
@@ -109,17 +110,35 @@ int main(int argc, char *argv[])
 			while (battlefields[i]->command_one_units > 0 && battlefields[i]->command_two_units > 0)
 			{
 				sleep(2);
-				printf("Battlefield %ld: \n", i);
+				//printf("Battlefield %ld: \n", i);
 
 				battle(battlefields[i]);
 
-				printf("Total: %s = %d VS %s = %d\n", 
+				send_message
+					(msg_id, &msg_buff, msg_type, (battlefield_t*)battlefields[i], sizeof(*battlefields[i]));
+
+			/*	printf("Battlefield %ld: %s = %4d VS %s = %4d\n", i,
 						battlefields[i]->command_one_name, battlefields[i]->command_one_units,
-						battlefields[i]->command_two_name, battlefields[i]->command_two_units);
+						battlefields[i]->command_two_name, battlefields[i]->command_two_units);*/
 			}
 
 			exit(1);
 		}
+	}
+
+
+	size_t current_quant_battlef = quantity_battlefields;
+	battlefield_t current_battlefield;
+	while (current_quant_battlef)
+	{
+		read_message(msg_id, &msg_buff, msg_type, &current_battlefield);
+
+		printf("Battlefield %ld: %s = %4d VS %s = %4d\n", current_battlefield.battfield_id,
+				current_battlefield.command_one_name, current_battlefield.command_one_units,
+				current_battlefield.command_two_name, current_battlefield.command_two_units);
+
+		if (current_battlefield.command_one_units <= 0 || current_battlefield.command_two_units <= 0)
+			current_quant_battlef--;
 	}
 
 
@@ -134,22 +153,22 @@ int main(int argc, char *argv[])
 	free(battlefields);
 	return 0;
 }
-/*
-void send_message(int msg_id, msg_buff_t * restrict msg_buff, long msg_type, void *data, size_t size_data)
-{
-	qbuf->mtype = type;
-	strcpy(qbuf->mtext, text);
 
-	if ((msgsnd(qid, (struct msgbuf *)qbuf,
-		    strlen(qbuf->mtext) + 1, 0)) == -1) {
-		perror("msgsnd");
+void send_message(int msg_id, msg_buff_t *msg_buff, long msg_type, void *data, size_t size_data)
+{
+	msg_buff->msg_type = msg_type;
+	memcpy(&msg_buff->msd_data, data, size_data);
+
+	if ((msgsnd(msg_id, (msg_buff_t*)msg_buff, sizeof(msg_buff_t) - sizeof(long), 0)) == -1) 
+	{
+		perror("Error: cannot send msg in msg_buff");
 		exit(1);
 	}
 }
 
-void read_message(int msg_id, msg_buff_t * restrict msg_buff, long msg_type, void *data, size_t size_data)
+void read_message(int msg_id, msg_buff_t *msg_buff_src, long msg_type, void *dest)
 {
-	qbuf->mtype = type;
-	msgrcv(qid, (struct msgbuf *)qbuf, MAX_SEND_SIZE, type, 0);
-	strcpy(msg, qbuf->mtext);
-}*/
+	msg_buff_src->msg_type = msg_type;
+	msgrcv(msg_id, (msg_buff_t*)msg_buff_src, sizeof(msg_buff_t) - sizeof(long), msg_type, 0);
+	memcpy(dest, &msg_buff_src->msd_data, sizeof(msg_buff_t) - sizeof(long));
+}

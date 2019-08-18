@@ -10,11 +10,13 @@
 
 //---------------Functions-----------------
 
-battlefield* init_battlefield
-    (const int32_t command_one_units, const uint8_t * restrict command_one_name,
+battlefield_t* init_battlefield
+    (const uint16_t battlefield_id,
+	 const int32_t command_one_units, const uint8_t * restrict command_one_name,
      const int32_t command_two_units, const uint8_t * restrict command_two_name)
 {
-    battlefield* result_ptr = (battlefield*)malloc(sizeof(battlefield));
+    battlefield_t* result_ptr = (battlefield_t*)malloc(sizeof(battlefield_t));
+    result_ptr->battfield_id = battlefield_id;
 
     result_ptr->command_one_units = command_one_units;
     if (strlen(command_one_name) >= MAX_LEN)
@@ -36,20 +38,20 @@ battlefield* init_battlefield
 }
 
 void battle
-    (battlefield * restrict battlefield)
+    (battlefield_t * restrict battlefield)
 {
     uint32_t new_units = rand() % 25, damage = rand() % 35;
-
-    printf("\tThe %s a got %d units!... and", battlefield->command_one_name, new_units);
-    printf("lost %d units...\n", battlefield->command_one_name, damage);
-
     battlefield->command_one_units += new_units; //Can be like new_units - damage = dunits, but it's uint_t
     battlefield->command_one_units -= damage;
 
-    new_units = rand() % 25; damage = rand() % 35;
-    printf("\tThe %s a got %d units!... and", battlefield->command_two_name, new_units);
-    printf("lost %d units...\n", battlefield->command_two_name, damage);
+    /*printf("\tThe %s a got %d units!... and ", battlefield->command_one_name, new_units);
+    printf("lost %d units...\n", damage);*/
 
-    battlefield->command_one_units += new_units;
-    battlefield->command_one_units -= damage;
+
+    new_units = rand() % 25; damage = rand() % 35;
+    battlefield->command_two_units += new_units;
+    battlefield->command_two_units -= damage;
+
+    /*printf("\tThe %s a got %d units!... and ", battlefield->command_two_name, new_units);
+    printf("lost %d units...\n", damage);*/
 }
