@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 		*(shm_ptr) = *(shm_ptr) - bear_portion;
 		sleep(time_of_eat);
 
-		printf("He ate. Honey left = %d\n", *(shm_ptr));
+		printf("Pooh ate. Honey left = %d\n", *(shm_ptr));
 	}
 	return 0;
 
