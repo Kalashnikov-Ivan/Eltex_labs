@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 		return 1;
 
 	//For msg IPC
-	const key_t key = ftok("./lab_8", 42);
+	key_t key = ftok("./main.c", 42);
 	const int msg_type = 1;
 	msg_buff_t msg_buff;
 
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 						battlefields[i]->command_two_name, battlefields[i]->command_two_units);*/
 			}
 
-			exit(1);
+			exit(0);
 		}
 	}
 
