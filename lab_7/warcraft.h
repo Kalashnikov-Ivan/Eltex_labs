@@ -5,11 +5,6 @@
 #endif
 
 //-----------------Types-------------------
-typedef struct 
-{
-	uint32_t cargo;
-
-} unit_worker;
 
 //---------------Functions-----------------
 
