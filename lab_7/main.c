@@ -24,7 +24,7 @@
 #define FIFO_GOLD "./exchange_gold_main.fifo"
 #define MAX_FORKS 128UL
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
 	int64_t gold_in_mine = 89;
 	uint16_t quantity_workers = 5, cargo = 7;
@@ -33,12 +33,12 @@ int main(int argc, char *argv[])
 
 	if (argc < 2) 
 	{
-		printf 
+		printf
 			("\nAre set default settings:\nGold in mine = %ld\nWorkers = %d\nCargo = %d\n\n", 
 			 gold_in_mine, quantity_workers, cargo);
-		printf 
+		printf
 			("If you want to set your settings, then restart the programm and set this in this format:\n\n");
-		printf 
+		printf
 			("./lab_7 <gold_in_mine> <workers> <cargo>\n\n");
 
 		sleep(2);

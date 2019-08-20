@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-c -Wall -std=c99 -O0 -g
+CFLAGS=-c -Wall -std=gnu99 -O0 -g
 
 all : lab_9.elf
 
