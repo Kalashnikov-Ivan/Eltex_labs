@@ -156,7 +156,7 @@ m_bool is_board
 	 const int32_t cord_x,
 	 const int32_t cord_y)
 {
-    return ((cord_x > field->size_x - 2) || (cord_y > field->size_y - 2)) || ((cord_x < 2) || (cord_y < 2));
+    return ((cord_x > field->size_x - 2) || (cord_y > field->size_y - 2)) || ((cord_x < 1) || (cord_y < 1));
 }
 
 //----------Support------------

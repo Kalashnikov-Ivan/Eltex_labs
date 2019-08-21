@@ -1,10 +1,12 @@
-#ifndef stdint.h
-	#include <stdint.h> //For uint8_t and so on...
-#endif
+#pragma once
+
+#include <stdint.h> //For uint8_t and so on...
 
 //-----------------Types-------------------
 typedef struct 
 {
+	uint16_t id;
+
 	uint8_t ch;
 	int32_t cord_x;
 	int32_t cord_y;
@@ -29,7 +31,7 @@ typedef struct
 field_t* init_field
 	(const size_t size_x,
 	 const size_t size_y,
-	 const uint32_t quant_walkers);
+	 const uint32_t quant_walkers, const int32_t health_walker);
 
 void free_field
 	(field_t * restrict field);

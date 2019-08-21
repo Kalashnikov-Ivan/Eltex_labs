@@ -13,9 +13,9 @@
 field_t* init_field
 	(const size_t size_x,
 	 const size_t size_y,
-	 const uint32_t quant_walkers)
+	 const uint32_t quant_walkers, const int32_t health_walker)
 {
-        //-----------ALOC MEMORY-------------
+    //-----------ALOC MEMORY-------------
     field_t *result_field = (field_t*)malloc(sizeof(field_t));
     if (NULL == result_field)
         return NULL;
@@ -24,13 +24,13 @@ field_t* init_field
     result_field->size_x = size_x;
     result_field->size_y = size_y;
 
-    result_field->area = (uint8_t**)malloc(sizeof(uint8_t*) * size_y);
+    result_field->area = (int8_t**)malloc(sizeof(int8_t*) * size_y);
     if (NULL == result_field->area)
         return NULL;
 
     for (size_t row = 0; row < size_y; row++)
     {
-        result_field->area[row] = (uint8_t*)malloc(sizeof(uint8_t) * size_x);
+        result_field->area[row] = (int8_t*)malloc(sizeof(int8_t) * size_x);
         if (NULL == result_field->area[row])
             return NULL;
     }
@@ -61,6 +61,8 @@ field_t* init_field
 
        result_field->walkers[i].ch = 'X';
        //result_field->walkers[i].ch = get_rand_num();
+       result_field->walkers[i].id = i;
+       result_field->walkers[i].health = health_walker;
        result_field->walkers[i].alive = true;
     }
 
@@ -151,23 +153,29 @@ bool move_walker
 	 const int32_t dx,
 	 const int32_t dy)
 {
-    if (walker->alive && !check_overlay(field,  walker->cord_x + dx, walker->cord_y + dy))
+    if (walker->alive)
     {
+        int32_t new_cord_x = walker->cord_x + dx,
+                new_cord_y = walker->cord_y + dy;
+
+        if (is_board(field, new_cord_x, new_cord_y))
+            return false;
+
         field->area[walker->cord_y][walker->cord_x] = 0;
 
-        walker->cord_x += dx;
-        walker->cord_y += dy;
+        walker->cord_x = new_cord_x;
+        walker->cord_y = new_cord_y;
 
-        if (is_board(field, walker->cord_x, walker->cord_y))
+        walker->health += field->area[walker->cord_y][walker->cord_x];
+
+        if (walker->health)
+            field->area[walker->cord_y][walker->cord_x] = walker->ch;
+        else
         {
+            field->area[walker->cord_y][walker->cord_x] = 0;
+            walker->alive = false;
             field->quant_walkers--;
-            walker->cord_x = -1;
-            walker->cord_y = -1;
-
-            return walker->alive = false;
         }
-
-        field->area[walker->cord_y][walker->cord_x] = walker->ch;
 
         return true;
     }
@@ -180,7 +188,7 @@ bool is_board
 	 const int32_t cord_x,
 	 const int32_t cord_y)
 {
-    return ((cord_x > field->size_x - 2) || (cord_y > field->size_y - 2)) || ((cord_x < 2) || (cord_y < 2));
+    return ((cord_x > field->size_x - 2) || (cord_y > field->size_y - 2)) || ((cord_x < 1) || (cord_y < 1));
 }
 
 //----------Support------------

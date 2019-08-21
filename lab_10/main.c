@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
 
 #include <stdbool.h>
 #include <stddef.h> //For size_t, ptrdiff_t and so on...
@@ -16,19 +19,16 @@ int main(void)
 	const size_t size_x = 10UL;
 	const size_t size_y = 10UL;
 
-	const uint32_t quantity_walkers = 3;
+	const uint32_t quantity_walkers = 3, start_health_walker = 2;
 	if (quantity_walkers > ((size_x - 2) * (size_y - 2)))
 		return 1;
 
-	field_t *field = init_field(size_x, size_y, quantity_walkers);
+	field_t *field = init_field(size_x, size_y, quantity_walkers, start_health_walker);
 
 	system("clear");
 	print_field(field);
 
-	const int32_t min_dx = -1, min_dy = -1,
-				  max_dx =  2, max_dy =  2;
-
-	uint32_t global_q_bubbles = field->quant_walkers;
+	uint32_t global_q_walkers = field->quant_walkers;
 
 	srand(time(NULL));
 	
@@ -37,7 +37,7 @@ int main(void)
 		int32_t rand_dx, 
 				rand_dy;
 
-		for (size_t j = 0; j < global_q_bubbles; j++)
+		for (size_t j = 0; j < global_q_walkers; j++)
 		{
 			rand_dx = get_rand_in_range(min_dx, max_dx); 
 			rand_dy = get_rand_in_range(min_dy, max_dy);
@@ -49,9 +49,11 @@ int main(void)
 		system("clear");
 		print_field(field);
 	
-		if (0)
-			for (int i = 0; i < global_q_bubbles; i++)
-				printf("%d: x = %2d | y = %2d\n", i + 1, field->walkers[i].cord_x, field->walkers[i].cord_y);
+		if (1)
+			for (size_t i = 0; i < global_q_walkers; i++)
+				printf("id[%d]: x = %2d | y = %2d | health = %2d\n", 
+					field->walkers[i].id, field->walkers[i].cord_x, field->walkers[i].cord_y,
+					field->walkers[i].health);
 	}
 
 	free_field(field);
