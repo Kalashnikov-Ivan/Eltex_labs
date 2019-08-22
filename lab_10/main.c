@@ -1,13 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
 
 #include <stdbool.h>
 #include <stddef.h> //For size_t, ptrdiff_t and so on...
 #include <stdint.h> //For uint8_t and so on...
 
+#include <pthread.h>
+#include <sys/types.h> 
+#include <sys/stat.h> 
+#include <wait.h> 
+#include <fcntl.h>
+#include <signal.h>
+#include <unistd.h>
+
 #include "walkers_game.h"
+
+#define	MAX_NITEMS 1000000
+
+struct 
+{
+	pthread_mutex_t	mutex;
+	int	buff[MAX_NITEMS];
+	int	n_put;
+	int	n_val;
+} shared = { 
+	PTHREAD_MUTEX_INITIALIZER
+};
 
 const int32_t min_dx = -1, min_dy = -1,
 			  max_dx =  2, max_dy =  2;
