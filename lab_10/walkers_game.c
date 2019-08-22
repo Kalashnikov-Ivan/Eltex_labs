@@ -131,7 +131,7 @@ void print_field
     }
 }
 
-bool check_overlay
+size_t check_overlay
     (const field_t * restrict field,
      const int32_t inpt_x,
      const int32_t inpt_y)
@@ -141,9 +141,9 @@ bool check_overlay
         if (field->walkers[i].alive)
             //what if trash from memory will be eq inpt_* ? 
             if ((field->walkers[i].cord_x == inpt_x) && (field->walkers[i].cord_y == inpt_y))
-                return true;
+                return i;
     }
-    return false;
+    return 0;
 }
 
 //----------Bubble------------
@@ -181,6 +181,22 @@ bool move_walker
     }
     
     return false;
+}
+
+size_t battle_walker
+	(walker_t * restrict walker_one,
+	 walker_t * restrict walker_two)
+{
+    if (walker_one->health > walker_two->health)
+    {
+        walker_one->health -= walker_two->health;
+        return walker_one->id;
+    }
+    else
+    {
+        walker_two->health -= walker_one->health;
+        return walker_two->id;
+    }
 }
 
 bool is_board

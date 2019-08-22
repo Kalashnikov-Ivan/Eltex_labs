@@ -5,7 +5,7 @@
 //-----------------Types-------------------
 typedef struct 
 {
-	uint16_t id;
+	size_t id;
 
 	uint8_t ch;
 	int32_t cord_x;
@@ -39,7 +39,7 @@ void free_field
 void print_field
 	(const field_t * restrict field);
 
-bool check_overlay
+size_t check_overlay
     (const field_t * restrict field,
      const int32_t inpt_x,
      const int32_t inpt_y);
@@ -50,6 +50,10 @@ bool move_walker
      walker_t * walker, 
 	 const int32_t dx,
 	 const int32_t dy);
+
+size_t battle_walker
+	(walker_t * restrict walker_one,
+	 walker_t * restrict walker_two);
 
 bool is_board
 	(const field_t * restrict field,

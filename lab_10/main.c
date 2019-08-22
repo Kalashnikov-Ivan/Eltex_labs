@@ -16,8 +16,14 @@
 
 #include "walkers_game.h"
 
-#define	MAX_NITEMS 1000000
+#define	MAX_NITEMS 1000000UL
 
+const int32_t min_dx = -1, min_dy = -1,
+			  max_dx =  2, max_dy =  2;
+
+const size_t BUFF_SIZE = 128UL;
+
+void *thread_walker(void *arg);
 struct 
 {
 	pthread_mutex_t	mutex;
@@ -27,11 +33,6 @@ struct
 } shared = { 
 	PTHREAD_MUTEX_INITIALIZER
 };
-
-const int32_t min_dx = -1, min_dy = -1,
-			  max_dx =  2, max_dy =  2;
-
-const size_t BUFF_SIZE = 128UL;
 
 int main(void) 
 {
@@ -50,10 +51,10 @@ int main(void)
 	uint32_t global_q_walkers = field->quant_walkers;
 
 	srand(time(NULL));
-	
+
 	while (field->quant_walkers)
 	{
-		int32_t rand_dx, 
+		int32_t rand_dx,
 				rand_dy;
 
 		for (size_t j = 0; j < global_q_walkers; j++)
@@ -62,6 +63,12 @@ int main(void)
 			rand_dy = get_rand_in_range(min_dy, max_dy);
 
 			move_walker(field, &field->walkers[j], rand_dx, rand_dy);
+
+
+			size_t overlay = check_overlay(field, field->walkers[j].cord_x, field->walkers[j].cord_y);
+			if (overlay != 0)
+
+
 		}
 		
 		usleep(600000);
@@ -78,3 +85,20 @@ int main(void)
 	free_field(field);
 	return 0;
 }
+
+/*void *thread_walker(void *arg)
+{
+
+	field_t *thread_field = (field_t*)arg;
+
+	int32_t rand_dx = get_rand_in_range(min_dx, max_dx), 
+			rand_dy = get_rand_in_range(min_dy, max_dy);
+
+	pthread_mutex_lock(&shared.mutex);
+
+		move_walker(thread_field, &thread_field->walkers[j], rand_dx, rand_dy);
+
+	pthread_mutex_unlock(&shared.mutex);
+
+	pthread_exit((void *)ps);
+}*/
