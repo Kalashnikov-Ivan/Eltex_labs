@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include <stdbool.h>
@@ -17,6 +18,7 @@
 #include "walkers_game.h"
 
 #define	MAX_NITEMS 1000000UL
+#define MAX_LEN_MESSAGE 128UL
 
 const int32_t min_dx = -1, min_dy = -1,
 			  max_dx =  2, max_dy =  2;
@@ -39,7 +41,7 @@ int main(void)
 	const size_t size_x = 10UL;
 	const size_t size_y = 10UL;
 
-	const uint32_t quantity_walkers = 3, start_health_walker = 2;
+	const uint32_t quantity_walkers = 5, start_health_walker = 1;
 	if (quantity_walkers > ((size_x - 2) * (size_y - 2)))
 		return 1;
 
@@ -59,27 +61,36 @@ int main(void)
 
 		for (size_t j = 0; j < global_q_walkers; j++)
 		{
-			rand_dx = get_rand_in_range(min_dx, max_dx); 
+			rand_dx = get_rand_in_range(min_dx, max_dx);
 			rand_dy = get_rand_in_range(min_dy, max_dy);
 
+			ssize_t overlay_id = check_overlay(field, rand_dx, rand_dy);
+			if (overlay_id != NOT_OVERLAY)
+			{
+				battle_walker(&field->walkers[j], &field->walkers[overlay_id]);
+				field->quant_walkers--;
+			}
+
 			move_walker(field, &field->walkers[j], rand_dx, rand_dy);
-
-
-			size_t overlay = check_overlay(field, field->walkers[j].cord_x, field->walkers[j].cord_y);
-			if (overlay != 0)
-
-
 		}
-		
+
 		usleep(600000);
 		system("clear");
 		print_field(field);
 	
 		if (1)
+		{
 			for (size_t i = 0; i < global_q_walkers; i++)
-				printf("id[%d]: x = %2d | y = %2d | health = %2d\n", 
-					field->walkers[i].id, field->walkers[i].cord_x, field->walkers[i].cord_y,
-					field->walkers[i].health);
+			{
+				if (field->walkers[i].health)
+					printf("id[%ld]: x = %2d | y = %2d | health = %2d\n", 
+						field->walkers[i].id, field->walkers[i].cord_x, field->walkers[i].cord_y,
+						field->walkers[i].health);
+				else
+					printf("id[%ld]: death\n", 
+						field->walkers[i].id);
+			}
+		}
 	}
 
 	free_field(field);

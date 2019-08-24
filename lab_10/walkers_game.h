@@ -2,6 +2,8 @@
 
 #include <stdint.h> //For uint8_t and so on...
 
+#define NOT_OVERLAY -42L
+
 //-----------------Types-------------------
 typedef struct 
 {
@@ -39,7 +41,7 @@ void free_field
 void print_field
 	(const field_t * restrict field);
 
-size_t check_overlay
+ssize_t check_overlay
     (const field_t * restrict field,
      const int32_t inpt_x,
      const int32_t inpt_y);

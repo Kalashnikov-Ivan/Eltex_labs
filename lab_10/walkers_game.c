@@ -5,6 +5,8 @@
 #include <stddef.h> //For size_t, ptrdiff_t and so on...
 #include <stdint.h> //For uint8_t and so on...
 
+#include <unistd.h>
+
 #include "walkers_game.h"
 
 //---------------Functions-----------------
@@ -50,7 +52,7 @@ field_t* init_field
 
     for (size_t i = 0UL; i < quant_walkers; i++)
     {
-       while (check_overlay(result_field, curr_x, curr_y))
+       while (check_overlay(result_field, curr_x, curr_y) != NOT_OVERLAY)
        {
             curr_x = get_rand_in_range(min_cord, max_cord_X);
             curr_y = get_rand_in_range(min_cord, max_cord_Y);       
@@ -131,19 +133,19 @@ void print_field
     }
 }
 
-size_t check_overlay
+ssize_t check_overlay
     (const field_t * restrict field,
      const int32_t inpt_x,
      const int32_t inpt_y)
 {
-    for (size_t i = 0; i < field->quant_walkers; i++)
+    for (ssize_t i = 0; i < field->quant_walkers; i++)
     {
         if (field->walkers[i].alive)
             //what if trash from memory will be eq inpt_* ? 
             if ((field->walkers[i].cord_x == inpt_x) && (field->walkers[i].cord_y == inpt_y))
                 return i;
     }
-    return 0;
+    return NOT_OVERLAY;
 }
 
 //----------Bubble------------
@@ -166,7 +168,8 @@ bool move_walker
         walker->cord_x = new_cord_x;
         walker->cord_y = new_cord_y;
 
-        walker->health += field->area[walker->cord_y][walker->cord_x];
+        if (field->area[walker->cord_y][walker->cord_x] != walker->ch)
+            walker->health += field->area[walker->cord_y][walker->cord_x];
 
         if (walker->health)
             field->area[walker->cord_y][walker->cord_x] = walker->ch;
@@ -190,12 +193,31 @@ size_t battle_walker
     if (walker_one->health > walker_two->health)
     {
         walker_one->health -= walker_two->health;
-        return walker_one->id;
+        walker_two->alive = false;
+        return walker_two->id;
     }
-    else
+    else if (walker_one->health < walker_two->health)
     {
         walker_two->health -= walker_one->health;
-        return walker_two->id;
+        walker_one->alive = false;
+        return walker_one->id;
+    }
+    else if (walker_one->health == walker_two->health)
+    {
+        srand(time(NULL));
+        int tmp = rand() % 2;
+        if (0 == tmp)
+        {
+            walker_one->health -= walker_two->health;
+            walker_two->alive = false;
+            return walker_two->id;
+        }
+        else
+        {
+            walker_two->health -= walker_one->health;
+            walker_one->alive = false;
+            return walker_one->id;
+        }
     }
 }
 
