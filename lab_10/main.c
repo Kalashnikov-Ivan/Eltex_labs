@@ -1,3 +1,9 @@
+/*
+
+		Author: Kalashnikov Ivan
+		Task: Lab_10, Var 11 (Turns game)
+
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
