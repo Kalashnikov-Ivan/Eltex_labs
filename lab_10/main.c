@@ -6,19 +6,12 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
 #include <stdbool.h>
 #include <stddef.h> //For size_t, ptrdiff_t and so on...
 #include <stdint.h> //For uint8_t and so on...
 
-#include <pthread.h>
-#include <sys/types.h> 
-#include <sys/stat.h> 
-#include <wait.h> 
-#include <fcntl.h>
-#include <signal.h>
 #include <unistd.h>
 
 #include "walkers_game.h"
@@ -29,17 +22,6 @@ const int32_t min_dx = -1, min_dy = -1,
 			  max_dx =  2, max_dy =  2;
 
 const size_t BUFF_SIZE = 128UL;
-
-void *thread_walker(void *arg);
-struct 
-{
-	pthread_mutex_t	mutex;
-	int	buff[MAX_NITEMS];
-	int	n_put;
-	int	n_val;
-} shared = { 
-	PTHREAD_MUTEX_INITIALIZER
-};
 
 int main(void) 
 {
@@ -101,20 +83,3 @@ int main(void)
 	free_field(field);
 	return 0;
 }
-
-/*void *thread_walker(void *arg)
-{
-
-	field_t *thread_field = (field_t*)arg;
-
-	int32_t rand_dx = get_rand_in_range(min_dx, max_dx), 
-			rand_dy = get_rand_in_range(min_dy, max_dy);
-
-	pthread_mutex_lock(&shared.mutex);
-
-		move_walker(thread_field, &thread_field->walkers[j], rand_dx, rand_dy);
-
-	pthread_mutex_unlock(&shared.mutex);
-
-	pthread_exit((void *)ps);
-}*/
