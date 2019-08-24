@@ -24,7 +24,6 @@
 #include "walkers_game.h"
 
 #define	MAX_NITEMS 1000000UL
-#define MAX_LEN_MESSAGE 128UL
 
 const int32_t min_dx = -1, min_dy = -1,
 			  max_dx =  2, max_dy =  2;
