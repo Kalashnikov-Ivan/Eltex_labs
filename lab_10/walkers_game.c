@@ -100,7 +100,7 @@ field_t* init_field
 }
 
 void free_field
-	(field_t * restrict field)
+	(field_t * field)
 {
     for (size_t row = 0; row < field->size_y; row++)
         free(field->area[row]);
@@ -111,7 +111,7 @@ void free_field
 }
 
 void print_field
-	(const field_t * restrict field)
+	(const field_t * field)
 {
     for (size_t row = 0UL; row < field->size_y; row++)
     {
@@ -134,7 +134,7 @@ void print_field
 }
 
 ssize_t check_overlay
-    (const field_t * restrict field,
+    (const field_t * field,
      const int32_t inpt_x,
      const int32_t inpt_y)
 {
@@ -150,7 +150,7 @@ ssize_t check_overlay
 
 //----------Bubble------------
 bool move_walker
-	(field_t * restrict field,
+	(field_t * field,
      walker_t * walker, 
 	 const int32_t dx,
 	 const int32_t dy)
@@ -187,8 +187,8 @@ bool move_walker
 }
 
 size_t battle_walker
-	(walker_t * restrict walker_one,
-	 walker_t * restrict walker_two)
+	(walker_t * walker_one,
+	 walker_t * walker_two)
 {
     if (walker_one->health > walker_two->health)
     {
@@ -222,7 +222,7 @@ size_t battle_walker
 }
 
 bool is_board
-	(const field_t * restrict field,
+	(const field_t * field,
 	 const int32_t cord_x,
 	 const int32_t cord_y)
 {

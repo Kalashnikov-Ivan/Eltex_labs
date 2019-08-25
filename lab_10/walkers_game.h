@@ -36,29 +36,29 @@ field_t* init_field
 	 const uint32_t quant_walkers, const int32_t health_walker);
 
 void free_field
-	(field_t * restrict field);
+	(field_t * field);
 
 void print_field
-	(const field_t * restrict field);
+	(const field_t * field);
 
 ssize_t check_overlay
-    (const field_t * restrict field,
+    (const field_t * field,
      const int32_t inpt_x,
      const int32_t inpt_y);
 
 //----------Bubble------------
 bool move_walker
-	(field_t * restrict field,
+	(field_t * field,
      walker_t * walker, 
 	 const int32_t dx,
 	 const int32_t dy);
 
 size_t battle_walker
-	(walker_t * restrict walker_one,
-	 walker_t * restrict walker_two);
+	(walker_t * walker_one,
+	 walker_t * walker_two);
 
 bool is_board
-	(const field_t * restrict field,
+	(const field_t * field,
 	 const int32_t cord_x,
 	 const int32_t cord_y);
      

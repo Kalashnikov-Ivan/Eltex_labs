@@ -41,6 +41,12 @@ struct
 	PTHREAD_MUTEX_INITIALIZER
 };
 
+typedef struct
+{
+	field_t *field;
+	size_t walker_id;
+} thread_data_t;
+
 int main(void) 
 {
 	const size_t size_x = 10UL;
@@ -59,25 +65,12 @@ int main(void)
 
 	srand(time(NULL));
 
-	while (field->quant_walkers)
+	thread_data_t thread_data = { field };
+
+	for (size_t i = 0; i < global_q_walkers; i++)
 	{
-		int32_t rand_dx,
-				rand_dy;
-
-		for (size_t j = 0; j < global_q_walkers; j++)
-		{
-			rand_dx = get_rand_in_range(min_dx, max_dx);
-			rand_dy = get_rand_in_range(min_dy, max_dy);
-
-			ssize_t overlay_id = check_overlay(field, rand_dx, rand_dy);
-			if (overlay_id != NOT_OVERLAY)
-			{
-				battle_walker(&field->walkers[j], &field->walkers[overlay_id]);
-				field->quant_walkers--;
-			}
-
-			move_walker(field, &field->walkers[j], rand_dx, rand_dy);
-		}
+		thread_data.walker_id = i;
+	}
 
 		usleep(600000);
 		system("clear");
@@ -96,25 +89,35 @@ int main(void)
 						field->walkers[i].id);
 			}
 		}
-	}
 
 	free_field(field);
 	return 0;
 }
 
-/*void *thread_walker(void *arg)
+void *thread_walker(void *arg)
 {
+	thread_data_t *data = (thread_data_t*)arg;
+	field_t *thread_field = data->field;
+	size_t walker_id = data->walker_id;
 
-	field_t *thread_field = (field_t*)arg;
+	while (thread_field->walkers[walker_id].alive)
+	{
+		int32_t rand_dx = get_rand_in_range(min_dx, max_dx),
+				rand_dy = get_rand_in_range(min_dy, max_dy);
 
-	int32_t rand_dx = get_rand_in_range(min_dx, max_dx), 
-			rand_dy = get_rand_in_range(min_dy, max_dy);
+		pthread_mutex_lock(&shared.mutex);
 
-	pthread_mutex_lock(&shared.mutex);
+		ssize_t overlay_id = check_overlay(thread_field, rand_dx, rand_dy);
+		if (overlay_id != NOT_OVERLAY)
+		{
+			battle_walker(&field->walkers[j], &field->walkers[overlay_id]);
+			field->quant_walkers--;
+		}
 
-		move_walker(thread_field, &thread_field->walkers[j], rand_dx, rand_dy);
+		move_walker(field, &field->walkers[j], rand_dx, rand_dy);
 
-	pthread_mutex_unlock(&shared.mutex);
+		pthread_mutex_unlock(&shared.mutex);
+	}
 
 	pthread_exit((void *)ps);
-}*/
+}
