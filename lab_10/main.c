@@ -54,7 +54,7 @@ int main(void)
 	const size_t size_x = 10UL;
 	const size_t size_y = 10UL;
 
-	const uint32_t quantity_walkers = 5, start_health_walker = 1;
+	const uint32_t quantity_walkers = 3, start_health_walker = 1;
 	if (quantity_walkers > ((size_x - 2) * (size_y - 2)))
 		return 1;
 
@@ -88,25 +88,25 @@ int main(void)
 
 	while (field->quant_walkers)
 	{
-			usleep(600000);
-			system("clear");
-			print_field(field);
+		sleep(1);
+		system("clear");
+		print_field(field);
 
-			for (size_t i = 0; i < global_q_walkers; i++)
+		for (size_t i = 0; i < global_q_walkers; i++)
+		{
+			if (1)
 			{
-				if (1)
-				{
-					if (field->walkers[i].alive)
-						printf("id[%ld]: x = %2d | y = %2d | health = %2d\n", 
-							field->walkers[i].id, field->walkers[i].cord_x, field->walkers[i].cord_y,
-							field->walkers[i].health);
-					else
-						printf("id[%ld]: death\n",
-							field->walkers[i].id);
-				}
-
-				//pthread_kill(threads[i], SIGUSR1);
+				if (field->walkers[i].alive)
+					printf("id[%ld]: x = %2d | y = %2d | health = %2d\n", 
+						field->walkers[i].id, field->walkers[i].cord_x, field->walkers[i].cord_y,
+						field->walkers[i].health);
+				else
+					printf("id[%ld]: death\n",
+						field->walkers[i].id);
 			}
+
+			pthread_kill(threads[i], SIGUSR1);
+		}
 	}
 	
 
@@ -145,15 +145,15 @@ void *thread_walker(void *arg)
 		{
 			battle_walker(&thread_field->walkers[walker_id], &thread_field->walkers[overlay_id]);
 			thread_field->quant_walkers--;
-
-			move_walker(thread_field, &thread_field->walkers[walker_id], rand_dx, rand_dy);
-
-			shared.tik++;
 		}
+
+		move_walker(thread_field, &thread_field->walkers[walker_id], rand_dx, rand_dy);
+		shared.tik++;
 
 		pthread_mutex_unlock(&shared.mutex);
 
-		//sigwait(NULL, SIGUSR1);
+		sigwait(NULL, SIGUSR1);
+		//usleep(600000);
 	}
 
 	pthread_exit((void *)ptr_status);

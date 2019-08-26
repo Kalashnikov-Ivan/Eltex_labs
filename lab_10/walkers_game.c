@@ -208,13 +208,11 @@ size_t battle_walker
         int tmp = rand() % 2;
         if (0 == tmp)
         {
-            walker_one->health -= walker_two->health;
             walker_two->alive = false;
             return walker_two->id;
         }
         else
         {
-            walker_two->health -= walker_one->health;
             walker_one->alive = false;
             return walker_one->id;
         }
