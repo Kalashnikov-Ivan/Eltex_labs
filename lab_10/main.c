@@ -34,9 +34,7 @@ void *thread_walker(void *arg);
 struct 
 {
 	pthread_mutex_t	mutex;
-	int	buff[MAX_NITEMS];
-	int	n_put;
-	int	n_val;
+	int tik;
 } shared = { 
 	PTHREAD_MUTEX_INITIALIZER
 };
@@ -49,8 +47,10 @@ typedef struct
 
 int main(void) 
 {
-
 //--------INIT---------
+	shared.tik = 0;
+	signal(SIGUSR1, SIG_IGN); 
+
 	const size_t size_x = 10UL;
 	const size_t size_y = 10UL;
 
@@ -69,9 +69,9 @@ int main(void)
 
 //--------THREADS---------
 	pthread_t *threads = (pthread_t*)malloc(sizeof(pthread_t) * quantity_walkers);
-	/*void **threads_status = (void**)malloc(sizeof(void*) * quantity_walkers);
+	void **threads_status = (void**)malloc(sizeof(void*) * quantity_walkers);
 		for (size_t i = 0; i < quantity_walkers; i++)
-			threads_status[i] = (void*)malloc(sizeof(void));*/
+			threads_status[i] = (void*)malloc(sizeof(void));
 
 	thread_data_t thread_data = { field };
 
@@ -86,18 +86,41 @@ int main(void)
 		}
 	}
 
+	while (field->quant_walkers)
+	{
+			usleep(600000);
+			system("clear");
+			print_field(field);
+
+			for (size_t i = 0; i < global_q_walkers; i++)
+			{
+				if (1)
+				{
+					if (field->walkers[i].alive)
+						printf("id[%ld]: x = %2d | y = %2d | health = %2d\n", 
+							field->walkers[i].id, field->walkers[i].cord_x, field->walkers[i].cord_y,
+							field->walkers[i].health);
+					else
+						printf("id[%ld]: death\n",
+							field->walkers[i].id);
+				}
+
+				//pthread_kill(threads[i], SIGUSR1);
+			}
+	}
+	
+
 	for (size_t i = 0; i < global_q_walkers; i++)
 	{
-		thread_data.walker_id = i;
-
 		if (pthread_join(threads[i], NULL) != 0) 
 		{
 			fprintf(stderr, "Error: joining thread[%ld]", i);
 			return EXIT_FAILURE;
 		}
-		//free(threads_status[i]);
+		free(threads_status[i]);
 	}
 
+	free(threads_status);
 	free(threads);
 	free_field(field);
 	return 0;
@@ -122,26 +145,15 @@ void *thread_walker(void *arg)
 		{
 			battle_walker(&thread_field->walkers[walker_id], &thread_field->walkers[overlay_id]);
 			thread_field->quant_walkers--;
-		}
 
-		move_walker(thread_field, &thread_field->walkers[walker_id], rand_dx, rand_dy);
+			move_walker(thread_field, &thread_field->walkers[walker_id], rand_dx, rand_dy);
 
-		usleep(600000);
-		system("clear");
-		print_field(thread_field);
-	
-		if (1)
-		{
-			if (thread_field->walkers[walker_id].alive)
-				printf("id[%ld]: x = %2d | y = %2d | health = %2d\n", 
-					thread_field->walkers[walker_id].id, thread_field->walkers[walker_id].cord_x, thread_field->walkers[walker_id].cord_y,
-					thread_field->walkers[walker_id].health);
-			else
-				printf("id[%ld]: death\n", 
-					thread_field->walkers[walker_id].id);
+			shared.tik++;
 		}
 
 		pthread_mutex_unlock(&shared.mutex);
+
+		//sigwait(NULL, SIGUSR1);
 	}
 
 	pthread_exit((void *)ptr_status);
