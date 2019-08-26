@@ -54,7 +54,7 @@ int main(void)
 	const size_t size_x = 10UL;
 	const size_t size_y = 10UL;
 
-	const uint32_t quantity_walkers = 5, start_health_walker = 1;
+	const uint32_t quantity_walkers = 3, start_health_walker = 1;
 	if (quantity_walkers > ((size_x - 2) * (size_y - 2)))
 		return 1;
 
