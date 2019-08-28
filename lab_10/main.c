@@ -76,13 +76,14 @@ int main(void)
 		for (size_t i = 0; i < quantity_walkers; i++)
 			threads_status[i] = (void*)malloc(sizeof(void));
 
-	thread_data_t thread_data = { field };
+	thread_data_t *thread_data = (thread_data_t*)malloc(sizeof(thread_data_t) * global_q_walkers);
 
 	for (size_t i = 0; i < global_q_walkers; i++)
 	{
-		thread_data.walker_id = i;
-
-		if (pthread_create(&threads[i], NULL, thread_walker, &thread_data) != 0) 
+		thread_data[i].field = field;
+		thread_data[i].walker_id = i;
+		
+		if (pthread_create(&threads[i], NULL, thread_walker, &thread_data[i]) != 0) 
 		{
 			fprintf(stderr, "Error: create thread[%ld]", i);
 			return EXIT_FAILURE;
@@ -124,6 +125,7 @@ int main(void)
 		free(threads_status[i]);
 	}
 
+	free(thread_data);
 	free(threads_status);
 	free(threads);
 	free_field(field);
