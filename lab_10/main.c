@@ -14,7 +14,7 @@
 #include <stdint.h> //For uint8_t and so on...
 
 #include <pthread.h>
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <sys/stat.h> 
 #include <wait.h> 
 #include <fcntl.h>
@@ -35,6 +35,7 @@ struct
 {
 	pthread_mutex_t	mutex;
 	int tik;
+	pthread_t main_thread;
 } shared = { 
 	PTHREAD_MUTEX_INITIALIZER
 };
@@ -49,7 +50,9 @@ int main(void)
 {
 //--------INIT---------
 	shared.tik = 0;
-	signal(SIGUSR1, SIG_IGN); 
+	shared.main_thread = pthread_self();
+	signal(SIGUSR1, SIG_IGN);
+	signal(SIGUSR2, SIG_IGN);
 
 	const size_t size_x = 10UL;
 	const size_t size_y = 10UL;
@@ -92,6 +95,7 @@ int main(void)
 		system("clear");
 		print_field(field);
 
+		sigwait(NULL, SIGUSR2);
 		for (size_t i = 0; i < global_q_walkers; i++)
 		{
 			if (1)
@@ -149,6 +153,9 @@ void *thread_walker(void *arg)
 
 		move_walker(thread_field, &thread_field->walkers[walker_id], rand_dx, rand_dy);
 		shared.tik++;
+
+		if (shared.tik == thread_field->quant_walkers)
+			pthread_kill(shared.main_thread, SIGUSR2);
 
 		pthread_mutex_unlock(&shared.mutex);
 
