@@ -33,10 +33,12 @@ const size_t BUFF_SIZE = 128UL;
 void *thread_walker(void *arg);
 struct 
 {
-	pthread_mutex_t	mutex;
+	pthread_mutex_t	mutex_data;
+	pthread_mutex_t	mutex_execut;
 	int tik;
 	pthread_t main_thread;
 } shared = { 
+	PTHREAD_MUTEX_INITIALIZER,
 	PTHREAD_MUTEX_INITIALIZER
 };
 
@@ -46,18 +48,23 @@ typedef struct
 	size_t walker_id;
 } thread_data_t;
 
+void sig()
+{
+	printf("\n\nAAAAAAAAAA\n\n");
+}
+
 int main(void) 
 {
 //--------INIT---------
 	shared.tik = 0;
 	shared.main_thread = pthread_self();
-	signal(SIGUSR1, SIG_IGN);
-	signal(SIGUSR2, SIG_IGN);
+	/* signal(SIGUSR1, &sig);
+	signal(SIGUSR2, SIG_IGN);*/
 
 	const size_t size_x = 10UL;
 	const size_t size_y = 10UL;
 
-	const uint32_t quantity_walkers = 3, start_health_walker = 1;
+	const uint32_t quantity_walkers = 3, start_health_walker = 3;
 	if (quantity_walkers > ((size_x - 2) * (size_y - 2)))
 		return 1;
 
@@ -92,11 +99,17 @@ int main(void)
 
 	while (field->quant_walkers)
 	{
-		sleep(1);
-		system("clear");
-		print_field(field);
+		/*printf("HELLO\n");
+		sleep(2);
+		sigwait(NULL, SIGUSR2);*/
 
-		sigwait(NULL, SIGUSR2);
+		pthread_mutex_lock(&shared.mutex_execut);
+		printf("MAIN EX LOCK\n");
+
+		sleep(2);
+		//system("clear");
+		//print_field(field);
+
 		for (size_t i = 0; i < global_q_walkers; i++)
 		{
 			if (1)
@@ -110,8 +123,13 @@ int main(void)
 						field->walkers[i].id);
 			}
 
-			pthread_kill(threads[i], SIGUSR1);
 		}
+
+		//shared.tik = 0;
+		pthread_mutex_unlock(&shared.mutex_execut);
+		printf("MAIN EX UNLOCK\n");
+
+		//pthread_kill(threads, SIGUSR1);
 	}
 	
 
@@ -141,10 +159,16 @@ void *thread_walker(void *arg)
 
 	while (thread_field->walkers[walker_id].alive)
 	{
+		pthread_mutex_lock(&shared.mutex_data);
+
+		if (shared.tik == 0)
+		{
+			pthread_mutex_lock(&shared.mutex_execut);
+			printf("THREAD %x EX LOCK\n", pthread_self());
+		}
+
 		int32_t rand_dx = get_rand_in_range(min_dx, max_dx),
 				rand_dy = get_rand_in_range(min_dy, max_dy);
-
-		pthread_mutex_lock(&shared.mutex);
 
 		ssize_t overlay_id = check_overlay(thread_field, rand_dx, rand_dy);
 		if (overlay_id != NOT_OVERLAY)
@@ -154,14 +178,22 @@ void *thread_walker(void *arg)
 		}
 
 		move_walker(thread_field, &thread_field->walkers[walker_id], rand_dx, rand_dy);
-		shared.tik++;
+		if (shared.tik < thread_field->quant_walkers)
+			shared.tik++;
+
+		/*if (shared.tik == thread_field->quant_walkers)
+			pthread_kill(shared.main_thread, SIGUSR2);*/
 
 		if (shared.tik == thread_field->quant_walkers)
-			pthread_kill(shared.main_thread, SIGUSR2);
+		{
+			shared.tik = 0;
+			pthread_mutex_unlock(&shared.mutex_execut);
+			printf("THREAD %x EX UNLOCK\n", pthread_self());
+		}
 
-		pthread_mutex_unlock(&shared.mutex);
+		pthread_mutex_unlock(&shared.mutex_data);
 
-		sigwait(NULL, SIGUSR1);
+		//sigwait(NULL, SIGUSR1);
 		//usleep(600000);
 	}
 
